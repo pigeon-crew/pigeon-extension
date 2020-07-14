@@ -1,40 +1,41 @@
-const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const getCSSModuleLocalIdent = require("react-dev-utils/getCSSModuleLocalIdent");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 // NOTE: Loader `include` paths are relative to this module
-const paths = require('../paths');
+const paths = require("../paths");
 
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
 
-
-
-
-const getLoaders = (isEnvProduction = false, isEnvDevelopment = true, shouldUseRelativeAssetPaths = true, shouldUseSourceMap = false) => {
-
+const getLoaders = (
+  isEnvProduction = false,
+  isEnvDevelopment = true,
+  shouldUseRelativeAssetPaths = true,
+  shouldUseSourceMap = false
+) => {
   const getStyleLoaders = (cssOptions, preProcessor) => {
     const styleLoaders = [
-      isEnvDevelopment && require.resolve('style-loader'),
+      isEnvDevelopment && require.resolve("style-loader"),
       isEnvProduction && {
         loader: MiniCssExtractPlugin.loader,
         options: Object.assign(
           {},
-          shouldUseRelativeAssetPaths ? { publicPath: '../../' } : undefined
+          shouldUseRelativeAssetPaths ? { publicPath: "../../" } : undefined
         ),
       },
       {
-        loader: require.resolve('css-loader'),
+        loader: require.resolve("css-loader"),
         options: cssOptions,
       },
       {
-        loader: require.resolve('postcss-loader'),
+        loader: require.resolve("postcss-loader"),
         options: {
-          ident: 'postcss',
+          ident: "postcss",
           plugins: () => [
-            require('postcss-flexbugs-fixes'),
-            require('postcss-preset-env')({
+            require("postcss-flexbugs-fixes"),
+            require("postcss-preset-env")({
               autoprefixer: {
-                flexbox: 'no-2009',
+                flexbox: "no-2009",
               },
               stage: 3,
             }),
@@ -54,28 +55,12 @@ const getLoaders = (isEnvProduction = false, isEnvDevelopment = true, shouldUseR
     return styleLoaders;
   };
 
-  const eslintLoader = {
-    test: /\.(js|mjs|jsx)$/,
-    enforce: 'pre',
-    use: [
-      {
-        options: {
-          formatter: require.resolve('react-dev-utils/eslintFormatter'),
-          eslintPath: require.resolve('eslint'),
-
-        },
-        loader: require.resolve('eslint-loader'),
-      },
-    ],
-    include: paths.appSrc,
-  };
-
   const urlLoader = {
     test: [/\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
-    loader: require.resolve('url-loader'),
+    loader: require.resolve("url-loader"),
     options: {
       limit: 10000,
-      name: 'static/media/[name].[hash:8].[ext]',
+      name: "static/media/[name].[hash:8].[ext]",
     },
   };
   // Process application JS with Babel.
@@ -83,20 +68,17 @@ const getLoaders = (isEnvProduction = false, isEnvDevelopment = true, shouldUseR
   const insideBabelLoader = {
     test: /\.(js|mjs|jsx|ts|tsx)$/,
     include: paths.appSrc,
-    loader: require.resolve('babel-loader'),
+    loader: require.resolve("babel-loader"),
     options: {
-      customize: require.resolve(
-        'babel-preset-react-app/webpack-overrides'
-      ),
+      customize: require.resolve("babel-preset-react-app/webpack-overrides"),
 
       plugins: [
         [
-          require.resolve('babel-plugin-named-asset-import'),
+          require.resolve("babel-plugin-named-asset-import"),
           {
             loaderMap: {
               svg: {
-                ReactComponent:
-                  '@svgr/webpack?-prettier,-svgo![path]',
+                ReactComponent: "@svgr/webpack?-prettier,-svgo![path]",
               },
             },
           },
@@ -111,14 +93,14 @@ const getLoaders = (isEnvProduction = false, isEnvDevelopment = true, shouldUseR
   const outsideBabelLoader = {
     test: /\.(js|mjs)$/,
     exclude: /@babel(?:\/|\\{1,2})runtime/,
-    loader: require.resolve('babel-loader'),
+    loader: require.resolve("babel-loader"),
     options: {
       babelrc: false,
       configFile: false,
       compact: false,
       presets: [
         [
-          require.resolve('babel-preset-react-app/dependencies'),
+          require.resolve("babel-preset-react-app/dependencies"),
           { helpers: true },
         ],
       ],
@@ -156,24 +138,21 @@ const getLoaders = (isEnvProduction = false, isEnvDevelopment = true, shouldUseR
   };
 
   const fileLoader = {
-    loader: require.resolve('file-loader'),
+    loader: require.resolve("file-loader"),
     exclude: [/\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
     options: {
-      name: 'static/media/[name].[hash:8].[ext]',
+      name: "static/media/[name].[hash:8].[ext]",
     },
   };
 
   return {
-    eslintLoader,
     urlLoader,
     insideBabelLoader,
     outsideBabelLoader,
     styleLoader,
     cssModuleLoader,
-    fileLoader
+    fileLoader,
   };
 };
 
 module.exports = getLoaders;
-
-
