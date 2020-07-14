@@ -2,9 +2,9 @@
 
 A Chrome extension to make sharing links easy and fun.
 
-## Setting Up
+## Get Started
 
-##### Installing Requirements
+Make sure that you have Node.JS and Yarn installed on your computer.
 
 ```bash
 yarn install
