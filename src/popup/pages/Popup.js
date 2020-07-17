@@ -1,13 +1,14 @@
 /** @format */
 
-import React from 'react';
-import styled from 'styled-components';
-import PFItem from '../components/PFItem';
+import React from "react";
+import styled from "styled-components";
+import PFItem from "../components/PFItem";
 
 const PopupContainer = styled.div`
   text-align: left;
   width: 310px;
   max-height: 290px;
+  overflow: scroll;
 `;
 
 const ContentContainer = styled.div`
@@ -16,7 +17,7 @@ const ContentContainer = styled.div`
 
 const Headline = styled.p`
   font-size: 20px;
-  font-family: 'Avenir';
+  font-family: "Avenir";
   font-weight: 600;
   color: white;
 `;
@@ -28,7 +29,7 @@ const URLInputField = styled.input`
   color: #797979;
   background-color: #f5f6f8;
   padding: 8px 16px;
-  font-family: 'Avenir';
+  font-family: "Avenir";
   font-weight: 400;
   font-size: 14px;
   border: 3px solid #f5f6f8;
@@ -47,29 +48,29 @@ const URLInputField = styled.input`
 
 const fakeData = [
   {
-    sender: 'Jane Doe',
-    link: 'The Verge was founded in 2011 in partnership with Vox Media',
-    timestamp: '5hrs ago',
+    sender: "Jane Doe",
+    link: "The Verge was founded in 2011 in partnership with Vox Media",
+    timestamp: "5hrs ago",
   },
   {
-    sender: 'John Smith',
-    link: 'The Verge was founded in 2011 in partnership with Vox Media',
-    timestamp: '5hrs ago',
+    sender: "John Smith",
+    link: "The Verge was founded in 2011 in partnership with Vox Media",
+    timestamp: "5hrs ago",
   },
   {
-    sender: 'John Smith',
-    link: 'The Verge was founded in 2011 in partnership with Vox Media',
-    timestamp: '5hrs ago',
+    sender: "John Smith",
+    link: "The Verge was founded in 2011 in partnership with Vox Media",
+    timestamp: "5hrs ago",
   },
   {
-    sender: 'John Smith',
-    link: 'The Verge was founded in 2011 in partnership with Vox Media',
-    timestamp: '5hrs ago',
+    sender: "John Smith",
+    link: "The Verge was founded in 2011 in partnership with Vox Media",
+    timestamp: "5hrs ago",
   },
   {
-    sender: 'John Smith',
-    link: 'The Verge was founded in 2011 in partnership with Vox Media',
-    timestamp: '5hrs ago',
+    sender: "John Smith",
+    link: "The Verge was founded in 2011 in partnership with Vox Media",
+    timestamp: "5hrs ago",
   },
 ];
 
