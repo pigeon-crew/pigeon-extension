@@ -104,5 +104,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "react-chrome-extension-router": "^1.1.0"
+  }
 }

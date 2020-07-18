@@ -1,5 +1,7 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import Popup from "./pages/Popup";
+/** @format */
 
-ReactDOM.render(<Popup />, document.getElementById("root"));
+import React from 'react';
+import ReactDOM from 'react-dom';
+import AppRouter from './pages/AppRouter';
+
+ReactDOM.render(<AppRouter />, document.getElementById('root'));
