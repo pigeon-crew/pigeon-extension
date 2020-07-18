@@ -9,18 +9,8 @@ const AppRouter = () => {
   // dummy log in status
   // true -> direct user to popup
   // false -> have user log in
-  const [loggedIn, setLoggedIn] = useState(true);
-  return (
-    <div>
-      {loggedIn ? (
-        <Router>
-          <Popup />
-        </Router>
-      ) : (
-        <Login />
-      )}
-    </div>
-  );
+  const [loggedIn, setLoggedIn] = useState(false);
+  return <Router>{loggedIn ? <Popup /> : <Login />}</Router>;
 };
 
 export default AppRouter;
