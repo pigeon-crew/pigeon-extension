@@ -9,7 +9,17 @@ const AppRouter = () => {
   // dummy log in status
   // true -> direct user to popup
   // false -> have user log in
-  const [loggedIn, setLoggedIn] = useState(true);
+  useEffect(() => {
+    const message = {
+      type: 'getLoginStatus',
+    };
+
+    chrome.runtime.sendMessage(message, (response) => {
+      setLoggedIn(response.loggedIn);
+    });
+  });
+
+  const [loggedIn, setLoggedIn] = useState(false);
   return <Router>{loggedIn ? <Main /> : <Login />}</Router>;
 };
 
