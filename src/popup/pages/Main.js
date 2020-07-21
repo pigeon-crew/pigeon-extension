@@ -27,7 +27,6 @@ const Headline = styled.p`
   color: white;
 `;
 
-// TODO: Eventually use Formik to hook up?
 const URLInputField = styled.input`
   width: 230px;
   border-radius: 12px;
@@ -101,6 +100,7 @@ const Main = () => {
         .then(() => {
           alert('Sent succesfully!');
           fetchMyFeed();
+          window.close();
         })
         .catch((err) => {
           alert(err.response.data.message);
@@ -112,22 +112,31 @@ const Main = () => {
     fetchMyFeed();
   }, []);
 
+  const handleEnterKey = (e) => {
+    if (e.key === 'Enter') {
+      handleSend();
+      e.preventDefault();
+    }
+  };
+
   return (
     <PopupContainer>
       <ContentContainer>
-        <button onClick={() => goTo(Contact)}>Go To Contact</button>
         <Headline>Share this link with</Headline>
         <URLInputField
+          ref={(input) => input && input.focus()}
+          id="targetInput"
           name="url"
           placeholder="Hit Enter to Send"
           value={recipient}
           onChange={onRecipientChanged}
+          onKeyDown={handleEnterKey}
         />
-        <button onClick={handleSend}>Send</button>
+        <button onClick={() => goTo(Contact)}>Go To Contact</button>
         <Headline>Pigeon Feed</Headline>
         {myFeed && myFeed.length > 0 ? (
           myFeed.map((val) => {
-            return <PFItem data={val} />;
+            return <PFItem key={val.id} data={val} />;
           })
         ) : (
           <div>Your feed is empty oops</div>
