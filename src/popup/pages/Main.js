@@ -69,7 +69,8 @@ const Main = () => {
       },
     })
       .then((res) => {
-        const data = res.data.data[1];
+        const data = res.data.data;
+        console.log('FETCHED!!');
         console.log(data);
         setMyFeed(data);
       })
