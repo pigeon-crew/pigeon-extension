@@ -100,7 +100,7 @@ const Main = () => {
         .then(() => {
           alert('Sent succesfully!');
           fetchMyFeed();
-          window.close();
+          // window.close();
         })
         .catch((err) => {
           alert(err.response.data.message);
@@ -125,7 +125,6 @@ const Main = () => {
         <Headline>Share this link with</Headline>
         <URLInputField
           ref={(input) => input && input.focus()}
-          id="targetInput"
           name="url"
           placeholder="Hit Enter to Send"
           value={recipient}
