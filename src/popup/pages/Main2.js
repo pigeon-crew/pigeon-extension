@@ -65,9 +65,51 @@ const renderSuggestion = (suggestion) => {
 const Main = () => {
   const [recipient, setRecipient] = useState('');
   const [suggestions, setSuggestions] = useState([]);
+  const [myFeed, setMyFeed] = useState();
 
   const onRecipientChanged = (e) => {
     setRecipient(e.target.value);
+  };
+
+  const handleSend = () => {
+    const query = { active: true, windowId: chrome.windows.WINDOW_ID_CURRENT };
+
+    chrome.tabs.query(query, (tabs) => {
+      const currentUrl = tabs[0].url;
+
+      axios({
+        url: `${API_ENDPOINT}/api/links/create`,
+        method: 'POST',
+        timeout: 0,
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'Content-Type': 'application/json',
+        },
+        data: JSON.stringify({
+          linkUrl: currentUrl,
+          recipientEmail: recipient,
+        }),
+      })
+        .then(() => {
+          alert('Sent succesfully!');
+          fetchMyFeed();
+          // window.close();
+        })
+        .catch((err) => {
+          alert(err.response.data.message);
+        });
+    });
+  };
+
+  useEffect(() => {
+    fetchMyFeed();
+  }, []);
+
+  const handleEnterKey = (e) => {
+    if (e.key === 'Enter') {
+      handleSend();
+      e.preventDefault();
+    }
   };
 
   const onSuggestionsFetchRequested = ({ value }) => {
@@ -75,6 +117,7 @@ const Main = () => {
   };
 
   const onSuggestionsClearRequested = () => {
+    console.log('yooo');
     setSuggestions([]);
   };
 
@@ -82,6 +125,7 @@ const Main = () => {
     placeholder: 'Hit Enter to Send',
     value: recipient,
     onChange: onRecipientChanged,
+    onKeyDown: handleEnterKey,
     ref: (input) => input && input.focus(),
   };
 
@@ -97,6 +141,15 @@ const Main = () => {
           renderSuggestion={renderSuggestion}
           inputProps={inputProps}
         />
+        {/* <button onClick={() => goTo(Contact)}>Go To Contact</button>
+        <Headline>Pigeon Feed</Headline>
+        {myFeed && myFeed.length > 0 ? (
+          myFeed.map((val) => {
+            return <PFItem key={val.id} data={val} />;
+          })
+        ) : (
+          <div>Your feed is empty oops</div>
+        )} */}
       </ContentContainer>
     </PopupContainer>
   );
