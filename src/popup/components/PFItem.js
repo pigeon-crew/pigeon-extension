@@ -27,11 +27,15 @@ const Footer = styled.p`
 `;
 
 const PFItem = ({ data }) => {
+  useEffect(() => {
+    console.log(data);
+  }, []);
+
   return (
     <FeedContainer>
-      <URLHeader>{data.link}</URLHeader>
+      <URLHeader>{data.linkUrl}</URLHeader>
       <Footer>
-        {data.sender} | {data.timestamp}
+        {data.senderName} | {data.timestamp}
       </Footer>
     </FeedContainer>
   );

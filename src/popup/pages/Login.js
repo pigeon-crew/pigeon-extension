@@ -1,6 +1,6 @@
 /** @format */
 import React, { useState, useEffect } from 'react';
-import Popup from './Popup';
+import Main from './Main';
 import styled from 'styled-components';
 import { goTo } from 'react-chrome-extension-router';
 
@@ -15,7 +15,7 @@ const Login = () => {
   return (
     <LoginContainer>
       <h1>Login</h1>
-      <button onClick={() => goTo(Popup)}>Done</button>
+      <button onClick={() => goTo(Main)}>Done</button>
     </LoginContainer>
   );
 };

@@ -1,0 +1,6 @@
+/** @format */
+
+export const ACCESS_TOKEN =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmcmllbmRzaGlwcyI6W10sIl9pZCI6IjVmMTQwZTk3Yzk1YzllMjcxMGY3ODc3NiIsImZpcnN0TmFtZSI6IkRhbiIsImxhc3ROYW1lIjoiU21pdGgiLCJlbWFpbCI6ImRzbWl0aEBnbWFpbC5jb20iLCJfX3YiOjAsImlhdCI6MTU5NTE0OTk5NSwiZXhwIjozMTcxMzk1OTIzOTV9.1pdb90mWU5hau-sAzzwVDAIDOsmZBcamVfhK7IYpHZY';
+
+export const API_ENDPOINT = 'https://pigeon-webapp.herokuapp.com';
