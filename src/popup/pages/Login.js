@@ -60,9 +60,9 @@ const Login = () => {
     };
 
     chrome.runtime.sendMessage(message, (response) => {
-      alert(response);
+      alert(response.message);
+      goTo(Main);
     });
-    //goTo(Main)
   };
 
   const handleEmailChanged = (e) => {

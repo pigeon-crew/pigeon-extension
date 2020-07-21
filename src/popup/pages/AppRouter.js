@@ -15,7 +15,7 @@ const AppRouter = () => {
     };
 
     chrome.runtime.sendMessage(message, (response) => {
-      setLoggedIn(response.loggedIn);
+      setLoggedIn(response.success);
     });
   });
 
