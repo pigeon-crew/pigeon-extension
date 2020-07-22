@@ -10,6 +10,10 @@ const FeedContainer = styled.div`
   margin: auto;
   padding: 2px 10px;
   margin-bottom: 20px;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const URLHeader = styled.p`
@@ -31,9 +35,15 @@ const PFItem = ({ data }) => {
     console.log(data);
   }, []);
 
+  const openURL = (url) => {
+    chrome.tabs.create({ active: true, url });
+  };
+
   return (
     <FeedContainer>
-      <URLHeader>{data.linkUrl}</URLHeader>
+      <URLHeader onClick={() => openURL(data.linkUrl)}>
+        {data.linkUrl}
+      </URLHeader>
       <Footer>
         {data.senderName} | {data.timestamp}
       </Footer>
