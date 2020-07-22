@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { parseISO, formatDistanceToNow } from 'date-fns';
 
 const FeedContainer = styled.div`
   width: 240px;
@@ -10,10 +11,6 @@ const FeedContainer = styled.div`
   margin: auto;
   padding: 2px 10px;
   margin-bottom: 20px;
-
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 const URLHeader = styled.p`
@@ -21,6 +18,10 @@ const URLHeader = styled.p`
   font-family: 'Avenir';
   font-weight: 600;
   color: #797979;
+
+  &:hover {
+    cursor: pointer;
+  }
 `;
 
 const Footer = styled.p`
@@ -35,13 +36,22 @@ const PFItem = ({ data }) => {
     chrome.tabs.create({ active: true, url });
   };
 
+  const renderTimestamp = () => {
+    const date = parseISO(data.timestamp);
+
+    console.log(date);
+    const timePeriod = formatDistanceToNow(date);
+
+    return `${timePeriod} ago`.replace(/almost|about|over?/gi, '');
+  };
+
   return (
     <FeedContainer>
       <URLHeader onClick={() => openURL(data.linkUrl)}>
         {data.linkUrl}
       </URLHeader>
       <Footer>
-        {data.senderName} | {data.timestamp}
+        {data.senderName} | {renderTimestamp()}
       </Footer>
     </FeedContainer>
   );

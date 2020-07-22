@@ -60,6 +60,7 @@
     "copy-webpack-plugin": "^4.6.0",
     "crx": "^3.2.1",
     "css-loader": "^1.0.0",
+    "date-fns": "^2.15.0",
     "dotenv": "6.0.0",
     "dotenv-expand": "4.2.0",
     "execa": "^1.0.0",
