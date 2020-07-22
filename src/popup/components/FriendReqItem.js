@@ -1,8 +1,8 @@
 /** @format */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 
-const FriendReqItem = ({ data }) => {
+const FriendReqItem = ({ data, handleAccept, handleReject }) => {
   useEffect(() => {
     console.log(data);
   }, []);
@@ -12,10 +12,22 @@ const FriendReqItem = ({ data }) => {
   };
 
   return (
-    <div>
-      <h3>{val.requesterName}</h3>
-      <button>Accept</button>
-      <button>Reject</button>
+    <div key={data._id}>
+      <h3>{data.requesterName}</h3>
+      <button
+        onClick={() => {
+          handleAccept(data._id);
+        }}
+      >
+        Accept
+      </button>
+      <button
+        onClick={() => {
+          handleReject(data._id);
+        }}
+      >
+        Reject
+      </button>
     </div>
   );
 };

@@ -6,6 +6,8 @@ import { goBack } from 'react-chrome-extension-router';
 import axios from 'axios';
 import { API_ENDPOINT, ACCESS_TOKEN } from '../config';
 
+import FriendReqItem from '../components/FriendReqItem';
+
 const ContactContainer = styled.div`
   text-align: left;
   width: 310px;
@@ -86,25 +88,14 @@ const Contact = () => {
       <button onClick={() => goBack()}>Back</button>
 
       {pendingRequests && pendingRequests.length > 0 ? (
-        pendingRequests.map((val) => {
+        pendingRequests.map((data) => {
           return (
-            <div key={val._id}>
-              <h3>{val.requesterName}</h3>
-              <button
-                onClick={() => {
-                  handleAccept(val._id);
-                }}
-              >
-                Accept
-              </button>
-              <button
-                onClick={() => {
-                  handleReject(val._id);
-                }}
-              >
-                Reject
-              </button>
-            </div>
+            <FriendReqItem
+              key={data._id}
+              data={data}
+              handleAccept={handleAccept}
+              handleReject={handleReject}
+            />
           );
         })
       ) : (
