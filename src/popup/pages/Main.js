@@ -15,7 +15,7 @@ import '../styles/Main.css';
 const PopupContainer = styled.div`
   text-align: left;
   width: 310px;
-  max-height: 400px;
+  height: 400px;
   overflow: scroll;
 `;
 
