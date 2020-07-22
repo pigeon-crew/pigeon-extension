@@ -31,10 +31,6 @@ const Footer = styled.p`
 `;
 
 const PFItem = ({ data }) => {
-  useEffect(() => {
-    console.log(data);
-  }, []);
-
   const openURL = (url) => {
     chrome.tabs.create({ active: true, url });
   };

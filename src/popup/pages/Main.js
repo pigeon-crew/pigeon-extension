@@ -166,7 +166,7 @@ const Main = () => {
         <Headline>Pigeon Feed</Headline>
         {myFeed && myFeed.length > 0 ? (
           myFeed.map((val) => {
-            return <PFItem key={val.id} data={val} />;
+            return <PFItem key={val._id} data={val} />;
           })
         ) : (
           <div>Your feed is empty oops</div>

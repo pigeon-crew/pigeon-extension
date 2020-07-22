@@ -1,7 +1,10 @@
 /** @format */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { goBack } from 'react-chrome-extension-router';
+
+import axios from 'axios';
+import { API_ENDPOINT, ACCESS_TOKEN } from '../config';
 
 const ContactContainer = styled.div`
   text-align: left;
@@ -10,16 +13,71 @@ const ContactContainer = styled.div`
   overflow: scroll;
 `;
 
-const pendingRequests = [
-  { id: '1', requesterName: 'John Smith' },
-  { id: '2', requesterName: 'Mary Smith' },
-];
-
 const Contact = () => {
+  const [pendingRequests, setPendingRequests] = useState([]);
+
   const pigeonSite = 'https://pigeon-webapp.herokuapp.com/';
   const openURL = (url) => {
     chrome.tabs.create({ active: true, url });
   };
+
+  const fetchPendingRequests = () => {
+    axios({
+      url: `${API_ENDPOINT}/api/friends/pending`,
+      method: 'POST',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+      },
+    }).then((res) => {
+      const requests = res.data.data;
+      setPendingRequests(requests);
+    });
+  };
+
+  const handleAccept = (id) => {
+    console.log(id);
+    axios({
+      url: `${API_ENDPOINT}/api/friends/accept`,
+      method: 'POST',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify({ friendReqId: id }),
+    })
+      .then(() => {
+        fetchPendingRequests();
+      })
+      .catch((err) => {
+        console.error(err.response);
+      });
+  };
+
+  const handleReject = (id) => {
+    console.log(id);
+    axios({
+      url: `${API_ENDPOINT}/api/friends/reject`,
+      method: 'POST',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify({ friendReqId: id }),
+    })
+      .then(() => {
+        fetchPendingRequests();
+      })
+      .catch((err) => {
+        console.error(err.response);
+      });
+  };
+
+  useEffect(() => {
+    fetchPendingRequests();
+  }, []);
 
   return (
     <ContactContainer>
@@ -30,10 +88,22 @@ const Contact = () => {
       {pendingRequests && pendingRequests.length > 0 ? (
         pendingRequests.map((val) => {
           return (
-            <div>
+            <div key={val._id}>
               <h3>{val.requesterName}</h3>
-              <button>Accept</button>
-              <button>Reject</button>
+              <button
+                onClick={() => {
+                  handleAccept(val._id);
+                }}
+              >
+                Accept
+              </button>
+              <button
+                onClick={() => {
+                  handleReject(val._id);
+                }}
+              >
+                Reject
+              </button>
             </div>
           );
         })
