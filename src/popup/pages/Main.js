@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import Autosuggest from 'react-autosuggest';
 import axios from 'axios';
 import { goTo } from 'react-chrome-extension-router';
 
@@ -9,10 +10,12 @@ import { API_ENDPOINT, ACCESS_TOKEN } from '../config';
 import Contact from './Contact';
 import PFItem from '../components/PFItem';
 
+import '../styles/Main.css';
+
 const PopupContainer = styled.div`
   text-align: left;
   width: 310px;
-  max-height: 290px;
+  min-height: 400px;
   overflow: scroll;
 `;
 
@@ -27,36 +30,42 @@ const Headline = styled.p`
   color: white;
 `;
 
-const URLInputField = styled.input`
-  width: 230px;
-  border-radius: 12px;
-  color: #797979;
-  background-color: #f5f6f8;
-  padding: 8px 16px;
-  font-family: 'Avenir';
-  font-weight: 400;
-  font-size: 14px;
-  border: 3px solid #f5f6f8;
+const friends = [
+  {
+    name: 'John Smith',
+    email: 'jsmith@gmail.com',
+  },
+  {
+    name: 'Jasmine Doe',
+    email: 'jdoe@gmail.com',
+  },
+  {
+    name: 'Jane Westfield',
+    email: 'jwestfield@gmail.com',
+  },
+];
 
-  &::placeholder {
-    color: rgba(0, 0, 0, 0.4);
-  }
+const getSuggestions = (value) => {
+  const inputValue = value.trim().toLowerCase();
+  const inputLength = inputValue.length;
 
-  &:focus {
-    outline: none;
-    background: white;
-    border: 3px solid #ff8686;
-    color: black;
-  }
-`;
+  return inputLength === 0
+    ? []
+    : friends.filter(
+        (friend) =>
+          friend.name.toLowerCase().slice(0, inputLength) === inputValue
+      );
+};
+const getSuggestionValue = (suggestion) => suggestion.email;
+const renderSuggestion = (suggestion) => {
+  return <div>{suggestion.name}</div>;
+};
 
+// Component
 const Main = () => {
   const [recipient, setRecipient] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
   const [myFeed, setMyFeed] = useState();
-
-  const onRecipientChanged = (e) => {
-    setRecipient(e.target.value);
-  };
 
   const fetchMyFeed = () => {
     axios({
@@ -68,10 +77,8 @@ const Main = () => {
       },
     })
       .then((res) => {
-        const data = res.data.data;
-        console.log('FETCHED!!');
-        console.log(data);
-        setMyFeed(data);
+        const links = res.data.links;
+        setMyFeed(links);
       })
       .catch((err) => {
         console.error(err.response);
@@ -113,24 +120,48 @@ const Main = () => {
   }, []);
 
   const handleEnterKey = (e) => {
-    if (e.key === 'Enter') {
-      handleSend();
-      e.preventDefault();
-    }
+    // if (e.key === 'Enter') {
+    //   handleSend();
+    //   e.preventDefault();
+    // }
+
+    console.log('todo');
+  };
+
+  // auto suggest related functions
+  const onRecipientChanged = (e, { newValue }) => {
+    setRecipient(newValue);
+  };
+
+  const onSuggestionsFetchRequested = ({ value }) => {
+    setSuggestions(getSuggestions(value));
+  };
+
+  const onSuggestionsClearRequested = () => {
+    setSuggestions([]);
+  };
+
+  const inputProps = {
+    placeholder: 'Hit Enter to Send',
+    value: recipient,
+    onChange: onRecipientChanged,
+    onKeyDown: handleEnterKey,
+    ref: (input) => input && input.focus(),
   };
 
   return (
     <PopupContainer>
       <ContentContainer>
         <Headline>Share this link with</Headline>
-        <URLInputField
-          ref={(input) => input && input.focus()}
-          name="url"
-          placeholder="Hit Enter to Send"
-          value={recipient}
-          onChange={onRecipientChanged}
-          onKeyDown={handleEnterKey}
+        <Autosuggest
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={onSuggestionsClearRequested}
+          getSuggestionValue={getSuggestionValue}
+          renderSuggestion={renderSuggestion}
+          inputProps={inputProps}
         />
+        <button onClick={handleSend}>Send</button>
         <button onClick={() => goTo(Contact)}>Go To Contact</button>
         <Headline>Pigeon Feed</Headline>
         {myFeed && myFeed.length > 0 ? (

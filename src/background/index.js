@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
       response({ success: true, message: 'Logged in succesfully.' });
       break;
     case 'getLoginStatus':
-      response({ success: false, message: 'User is logged in already.' });
+      response({ success: true, message: 'User is logged in already.' });
       break;
     default:
       response('unknown request');
