@@ -1,8 +1,6 @@
 /** @format */
-import React, { useState, useEffect } from 'react';
-import Main from './Main';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { goTo } from 'react-chrome-extension-router';
 
 const LoginContainer = styled.div`
   text-align: left;
@@ -62,7 +60,6 @@ const Login = ({ setLoggedIn }) => {
           return;
         }
 
-        console.log(response.error);
         alert(response.error.message);
       }
     );
