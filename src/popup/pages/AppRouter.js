@@ -19,7 +19,13 @@ const AppRouter = () => {
   });
 
   return (
-    <Router>{loggedIn ? <Main /> : <Login setLoggedIn={setLoggedIn} />}</Router>
+    <Router>
+      {loggedIn ? (
+        <Main setLoggedIn={setLoggedIn} />
+      ) : (
+        <Login setLoggedIn={setLoggedIn} />
+      )}
+    </Router>
   );
 };
 

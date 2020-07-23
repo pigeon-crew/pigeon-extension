@@ -110,6 +110,19 @@ function fetchCurrentFriend() {
   });
 }
 
+function setTokens(accessToken, refreshToken) {
+  return new Promise((resolve, reject) => {
+    setRefreshToken(refreshToken, (res1) => {
+      setAccessToken(accessToken, (res2) => {
+        if (res1 && res1.success && res2 && res2.success) {
+          resolve();
+        }
+        reject(new Error('Set token failure'));
+      });
+    });
+  });
+}
+
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
   switch (msg.type) {
     case 'popupInit':
@@ -127,15 +140,13 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
       login(email, password)
         .then((data) => {
           const { refreshToken, accessToken } = data;
-
-          setRefreshToken(refreshToken, (res1) => {
-            setAccessToken(accessToken, (res2) => {
-              if (res1 && res1.success && res2 && res2.success) {
-                response({ success: true });
-              }
-              response({ success: false });
+          setTokens(refreshToken, accessToken)
+            .then(() => {
+              response({ success: true });
+            })
+            .catch((err) => {
+              response({ success: false, error: err });
             });
-          });
         })
         .catch((err) => {
           response({ success: false, error: err });
@@ -171,6 +182,13 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
         .catch((err) => {
           response({ success: false, error: err });
         });
+      break;
+    case 'logout':
+      setTokens('', '')
+        .then(() => {
+          response({ success: true });
+        })
+        .catch((err) => response({ success: false, error: err }));
       break;
     default:
       response('unknown request');

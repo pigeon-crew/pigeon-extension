@@ -76,7 +76,7 @@ const Login = ({ setLoggedIn }) => {
   return (
     <LoginContainer>
       <ContentContainer>
-        <Headline>Login</Headline>
+        <Headline>Welcome Back!</Headline>
         <p>
           Don't have an account yet? <a href="#">Sign Up</a>
         </p>
@@ -91,7 +91,7 @@ const Login = ({ setLoggedIn }) => {
           value={password}
           onChange={handlePasswordChanged}
         />
-        <button onClick={handleLogin}>Done</button>
+        <button onClick={handleLogin}>Login</button>
       </ContentContainer>
     </LoginContainer>
   );

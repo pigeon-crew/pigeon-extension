@@ -28,18 +28,10 @@ const Headline = styled.p`
   color: white;
 `;
 
-const fakeFriendData = [
-  {
-    firstName: 'Adam',
-    lastName: 'Smith',
-    email: 'awestfield@gmail.com',
-  },
-];
-
 // Component
-const Main = () => {
+const Main = ({ setLoggedIn }) => {
   const [recipient, setRecipient] = useState('');
-  const [friends, setFriends] = useState(fakeFriendData);
+  const [friends, setFriends] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [myFeed, setMyFeed] = useState();
 
@@ -73,10 +65,21 @@ const Main = () => {
       chrome.runtime.sendMessage({ type: 'sendLink', payload }, (response) => {
         if (response && response.success) {
           fetchMyFeed();
+          alert('Link sent succesfully!');
           return;
         }
         alert('Error');
       });
+    });
+  };
+
+  const logout = () => {
+    chrome.runtime.sendMessage({ type: 'logout' }, (response) => {
+      if (response && response.success) {
+        setLoggedIn(false);
+        return;
+      }
+      alert('Error');
     });
   };
 
@@ -93,6 +96,10 @@ const Main = () => {
 
     console.log('todo');
   };
+
+  // *******************************
+  // BELOW ARE AUTOSUGGEST FUNCTIONS
+  // *******************************
 
   const getSuggestions = (value) => {
     const inputValue = value.trim().toLowerCase();
@@ -149,6 +156,7 @@ const Main = () => {
         />
         <button onClick={handleSend}>Send</button>
         <button onClick={() => goTo(Contact)}>Go To Contact</button>
+        <button onClick={logout}>Logout</button>
         <Headline>Pigeon Feed</Headline>
         {myFeed && myFeed.length > 0 ? (
           myFeed.map((val) => {
