@@ -3,10 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Autosuggest from 'react-autosuggest';
-import axios from 'axios';
 import { goTo } from 'react-chrome-extension-router';
 
-import { API_ENDPOINT, ACCESS_TOKEN } from '../../common/config';
 import Contact from './Contact';
 import PFItem from '../components/PFItem';
 
@@ -30,92 +28,60 @@ const Headline = styled.p`
   color: white;
 `;
 
-const friends = [
+const fakeFriendData = [
   {
-    name: 'John Smith',
-    email: 'jsmith@gmail.com',
-  },
-  {
-    name: 'Jasmine Doe',
-    email: 'jdoe@gmail.com',
-  },
-  {
-    name: 'Jane Westfield',
-    email: 'jwestfield@gmail.com',
+    firstName: 'Adam',
+    lastName: 'Smith',
+    email: 'awestfield@gmail.com',
   },
 ];
-
-const getSuggestions = (value) => {
-  const inputValue = value.trim().toLowerCase();
-  const inputLength = inputValue.length;
-
-  return inputLength === 0
-    ? []
-    : friends.filter(
-        (friend) =>
-          friend.name.toLowerCase().slice(0, inputLength) === inputValue
-      );
-};
-const getSuggestionValue = (suggestion) => suggestion.email;
-const renderSuggestion = (suggestion) => {
-  return <div>{suggestion.name}</div>;
-};
 
 // Component
 const Main = () => {
   const [recipient, setRecipient] = useState('');
+  const [friends, setFriends] = useState(fakeFriendData);
   const [suggestions, setSuggestions] = useState([]);
   const [myFeed, setMyFeed] = useState();
 
   const fetchMyFeed = () => {
-    axios({
-      url: `${API_ENDPOINT}/api/links/me`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    })
-      .then((res) => {
-        const links = res.data.links;
-        setMyFeed(links);
-      })
-      .catch((err) => {
-        console.error(err.response);
-      });
+    chrome.runtime.sendMessage({ type: 'fetchMyFeed' }, (response) => {
+      if (response && response.success) {
+        setMyFeed(response.links);
+        return;
+      }
+    });
+  };
+
+  const fetchCurrentFriend = () => {
+    chrome.runtime.sendMessage({ type: 'fetchCurrentFriend' }, (response) => {
+      if (response && response.success) {
+        setFriends(response.friend);
+        return;
+      }
+    });
   };
 
   const handleSend = () => {
     const query = { active: true, windowId: chrome.windows.WINDOW_ID_CURRENT };
 
     chrome.tabs.query(query, (tabs) => {
-      const currentUrl = tabs[0].url;
+      const linkUrl = tabs[0].url;
+      const recipientEmail = recipient;
 
-      axios({
-        url: `${API_ENDPOINT}/api/links/create`,
-        method: 'POST',
-        timeout: 0,
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-          'Content-Type': 'application/json',
-        },
-        data: JSON.stringify({
-          linkUrl: currentUrl,
-          recipientEmail: recipient,
-        }),
-      })
-        .then(() => {
-          alert('Sent succesfully!');
+      const payload = { linkUrl, recipientEmail };
+
+      chrome.runtime.sendMessage({ type: 'sendLink', payload }, (response) => {
+        if (response && response.success) {
           fetchMyFeed();
-          // window.close();
-        })
-        .catch((err) => {
-          alert(err.response.data.message);
-        });
+          return;
+        }
+        alert('Error');
+      });
     });
   };
 
   useEffect(() => {
+    fetchCurrentFriend();
     fetchMyFeed();
   }, []);
 
@@ -126,6 +92,26 @@ const Main = () => {
     // }
 
     console.log('todo');
+  };
+
+  const getSuggestions = (value) => {
+    const inputValue = value.trim().toLowerCase();
+    const inputLength = inputValue.length;
+
+    return inputLength === 0
+      ? []
+      : friends.filter((friend) => {
+          const fullName = `${friend.firstName} ${friend.lastName}`;
+          return fullName.toLowerCase().slice(0, inputLength) === inputValue;
+        });
+  };
+  const getSuggestionValue = (suggestion) => suggestion.email;
+  const renderSuggestion = (suggestion) => {
+    return (
+      <div>
+        {suggestion.firstName} {suggestion.lastName}
+      </div>
+    );
   };
 
   // auto suggest related functions

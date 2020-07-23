@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { goBack } from 'react-chrome-extension-router';
 
 import axios from 'axios';
-import { API_ENDPOINT, ACCESS_TOKEN } from '../../common/config';
+import { API_ENDPOINT, ACCESS_TOKEN } from '../../services/config';
 
 import FriendReqItem from '../components/FriendReqItem';
 
@@ -58,7 +58,6 @@ const Contact = () => {
   };
 
   const handleReject = (id) => {
-    console.log(id);
     axios({
       url: `${API_ENDPOINT}/api/friends/reject`,
       method: 'POST',

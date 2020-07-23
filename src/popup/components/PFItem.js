@@ -38,8 +38,6 @@ const PFItem = ({ data }) => {
 
   const renderTimestamp = () => {
     const date = parseISO(data.timestamp);
-
-    console.log(date);
     const timePeriod = formatDistanceToNow(date);
 
     return `${timePeriod} ago`.replace(/almost|about|over?/gi, '');
