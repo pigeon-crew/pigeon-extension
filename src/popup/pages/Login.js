@@ -46,23 +46,25 @@ const InputField = styled.input`
   }
 `;
 
-const Login = () => {
+const Login = ({ setLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    const message = {
-      type: 'setLogin',
-      payload: {
-        email,
-        password,
-      },
-    };
+    if (!email) return;
+    if (!password) return;
 
-    chrome.runtime.sendMessage(message, (response) => {
-      alert(response.message);
-      goTo(Main);
-    });
+    chrome.runtime.sendMessage(
+      { type: 'login', payload: { email, password } },
+      (response) => {
+        if (response && response.success) {
+          setLoggedIn(true);
+          return;
+        }
+
+        alert(response.error);
+      }
+    );
   };
 
   const handleEmailChanged = (e) => {
@@ -81,7 +83,6 @@ const Login = () => {
           Don't have an account yet? <a href="#">Sign Up</a>
         </p>
         <InputField
-          ref={(input) => input && input.focus()}
           placeholder="Email"
           value={email}
           onChange={handleEmailChanged}

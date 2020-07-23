@@ -6,7 +6,7 @@ import Autosuggest from 'react-autosuggest';
 import axios from 'axios';
 import { goTo } from 'react-chrome-extension-router';
 
-import { API_ENDPOINT, ACCESS_TOKEN } from '../config';
+import { API_ENDPOINT, ACCESS_TOKEN } from '../../common/config';
 import Contact from './Contact';
 import PFItem from '../components/PFItem';
 

@@ -5,22 +5,22 @@ import { Router } from 'react-chrome-extension-router';
 import Login from './Login';
 import Main from './Main';
 
-const AppRouter = () => {
-  // dummy log in status
-  // true -> direct user to popup
-  // false -> have user log in
-  useEffect(() => {
-    const message = {
-      type: 'getLoginStatus',
-    };
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//   if (request.message === 'hi') sendResponse({ message: 'hi to you' });
+// });
 
-    chrome.runtime.sendMessage(message, (response) => {
-      setLoggedIn(response.success);
-    });
+const AppRouter = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  chrome.runtime.sendMessage({ type: 'popupInit' }, (response) => {
+    if (response && response.success) {
+      setLoggedIn(true);
+    }
   });
 
-  const [loggedIn, setLoggedIn] = useState(false);
-  return <Router>{loggedIn ? <Main /> : <Login />}</Router>;
+  return (
+    <Router>{loggedIn ? <Main /> : <Login setLoggedIn={setLoggedIn} />}</Router>
+  );
 };
 
 export default AppRouter;

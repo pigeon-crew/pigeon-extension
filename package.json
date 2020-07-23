@@ -109,6 +109,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@babel/plugin-transform-arrow-functions": "^7.10.4",
     "react-chrome-extension-router": "^1.1.0"
   }
 }

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { goBack } from 'react-chrome-extension-router';
 
 import axios from 'axios';
-import { API_ENDPOINT, ACCESS_TOKEN } from '../config';
+import { API_ENDPOINT, ACCESS_TOKEN } from '../../common/config';
 
 import FriendReqItem from '../components/FriendReqItem';
 
