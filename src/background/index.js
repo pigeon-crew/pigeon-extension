@@ -6,6 +6,8 @@ import {
   fetchMyFeed,
   sendLink,
   fetchPendingFriend,
+  acceptRequest,
+  rejectRequest,
 } from '../services/apiClient';
 
 import {
@@ -74,6 +76,26 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
         .then((token) => {
           fetchPendingFriend(token)
             .then((data) => response({ success: true, request: data }))
+            .catch((err) => response({ success: false, error: err }));
+        })
+        .catch((err) => response({ success: false, error: err }));
+      break;
+    case 'acceptRequest':
+      getAccessToken()
+        .then((token) => {
+          const { friendReqId } = msg.payload;
+          acceptRequest(friendReqId, token)
+            .then(() => response({ success: true }))
+            .catch((err) => response({ success: false, error: err }));
+        })
+        .catch((err) => response({ success: false, error: err }));
+      break;
+    case 'rejectRequest':
+      getAccessToken()
+        .then((token) => {
+          const { friendReqId } = msg.payload;
+          rejectRequest(friendReqId, token)
+            .then(() => response({ success: true }))
             .catch((err) => response({ success: false, error: err }));
         })
         .catch((err) => response({ success: false, error: err }));

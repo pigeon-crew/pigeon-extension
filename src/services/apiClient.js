@@ -56,7 +56,7 @@ function sendLink(linkUrl, recipientEmail, ACCESS_TOKEN) {
       }),
     })
       .then(() => resolve())
-      .catch((err) => reject(err));
+      .catch((err) => reject(err.response));
   });
 }
 
@@ -79,7 +79,6 @@ function fetchCurrentFriend(ACCESS_TOKEN) {
 }
 
 function fetchPendingFriend(ACCESS_TOKEN) {
-  console.log(ACCESS_TOKEN);
   return new Promise((resolve, reject) => {
     axios({
       url: `${API_ENDPOINT}/api/friends/pending`,
@@ -94,10 +93,50 @@ function fetchPendingFriend(ACCESS_TOKEN) {
         resolve(requests);
       })
       .catch((err) => {
-        console.log(err.response);
-        reject(err);
+        reject(err.response);
       });
   });
 }
+function acceptRequest(friendReqId, ACCESS_TOKEN) {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: `${API_ENDPOINT}/api/friends/accept`,
+      method: 'POST',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify({ friendReqId }),
+    })
+      .then(() => resolve())
+      .catch((err) => reject(err.response));
+  });
+}
 
-export { login, fetchCurrentFriend, fetchMyFeed, sendLink, fetchPendingFriend };
+function rejectRequest(friendReqId, ACCESS_TOKEN) {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: `${API_ENDPOINT}/api/friends/reject`,
+      method: 'POST',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify({ friendReqId }),
+    })
+      .then(() => resolve())
+      .catch((err) => reject(err.response));
+  });
+}
+
+export {
+  login,
+  fetchCurrentFriend,
+  fetchMyFeed,
+  sendLink,
+  fetchPendingFriend,
+  acceptRequest,
+  rejectRequest,
+};

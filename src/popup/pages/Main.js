@@ -68,7 +68,8 @@ const Main = ({ setLoggedIn }) => {
           alert('Link sent succesfully!');
           return;
         }
-        alert('Error');
+        console.log(response.error);
+        alert(response.error.data.message);
       });
     });
   };

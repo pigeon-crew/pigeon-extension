@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { goBack } from 'react-chrome-extension-router';
 
-import axios from 'axios';
-import { API_ENDPOINT, ADD_FRIEND_URL } from '../../services/config';
+import { ADD_FRIEND_URL } from '../../services/config';
 
 import FriendReqItem from '../components/FriendReqItem';
 
@@ -32,43 +31,34 @@ const Contact = () => {
     });
   };
 
-  const handleAccept = (id) => {
-    console.log(id);
-    axios({
-      url: `${API_ENDPOINT}/api/friends/accept`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify({ friendReqId: id }),
-    })
-      .then(() => {
-        fetchPendingRequests();
-      })
-      .catch((err) => {
-        console.error(err.response);
-      });
+  const handleAccept = (friendReqId) => {
+    const payload = { friendReqId };
+
+    chrome.runtime.sendMessage(
+      { type: 'acceptRequest', payload },
+      (response) => {
+        if (response && response.success) {
+          fetchPendingRequests();
+          return;
+        }
+        alert('Accept Request Error');
+      }
+    );
   };
 
-  const handleReject = (id) => {
-    axios({
-      url: `${API_ENDPOINT}/api/friends/reject`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify({ friendReqId: id }),
-    })
-      .then(() => {
-        fetchPendingRequests();
-      })
-      .catch((err) => {
-        console.error(err.response);
-      });
+  const handleReject = (friendReqId) => {
+    const payload = { friendReqId };
+
+    chrome.runtime.sendMessage(
+      { type: 'rejectRequest', payload },
+      (response) => {
+        if (response && response.success) {
+          fetchPendingRequests();
+          return;
+        }
+        alert('Reject Request Error');
+      }
+    );
   };
 
   useEffect(() => {
