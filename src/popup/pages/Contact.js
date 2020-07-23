@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { goBack } from 'react-chrome-extension-router';
 
 import axios from 'axios';
-import { API_ENDPOINT, ACCESS_TOKEN } from '../../services/config';
+import { API_ENDPOINT, ADD_FRIEND_URL } from '../../services/config';
 
 import FriendReqItem from '../components/FriendReqItem';
 
@@ -18,22 +18,17 @@ const ContactContainer = styled.div`
 const Contact = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
 
-  const pigeonSite = 'https://pigeon-webapp.herokuapp.com/';
   const openURL = (url) => {
     chrome.tabs.create({ active: true, url });
   };
 
   const fetchPendingRequests = () => {
-    axios({
-      url: `${API_ENDPOINT}/api/friends/pending`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    }).then((res) => {
-      const requests = res.data.data;
-      setPendingRequests(requests);
+    chrome.runtime.sendMessage({ type: 'fetchPendingFriends' }, (response) => {
+      if (response && response.success) {
+        setPendingRequests(response.request);
+        return;
+      }
+      alert('Fetch Pending Request Error');
     });
   };
 
@@ -83,7 +78,7 @@ const Contact = () => {
   return (
     <ContactContainer>
       <h1>Pending Requests</h1>
-      <button onClick={() => openURL(pigeonSite)}>Add Friends</button>
+      <button onClick={() => openURL(ADD_FRIEND_URL)}>Add Friends</button>
       <button onClick={() => goBack()}>Back</button>
 
       {pendingRequests && pendingRequests.length > 0 ? (
