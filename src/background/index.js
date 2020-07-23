@@ -62,7 +62,7 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
     case 'login':
       login(msg.payload, (res) => {
         if (res.error) {
-          response({ success: false, error: res.error });
+          response({ success: false, error: res.error.data });
         }
 
         const { refreshToken, accessToken } = res;

@@ -62,7 +62,8 @@ const Login = ({ setLoggedIn }) => {
           return;
         }
 
-        alert(response.error);
+        console.log(response.error);
+        alert(response.error.message);
       }
     );
   };
