@@ -131,6 +131,24 @@ function rejectRequest(friendReqId, ACCESS_TOKEN) {
   });
 }
 
+function fetchMe(ACCESS_TOKEN) {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: `${API_ENDPOINT}/api/users/me`,
+      method: 'GET',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+      },
+    })
+      .then((res) => {
+        const me = res.data.data;
+        resolve(me);
+      })
+      .catch((err) => reject(err.response));
+  });
+}
+
 export {
   login,
   fetchCurrentFriend,
@@ -139,4 +157,5 @@ export {
   fetchPendingFriend,
   acceptRequest,
   rejectRequest,
+  fetchMe,
 };
