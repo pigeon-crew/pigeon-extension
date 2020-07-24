@@ -8,19 +8,61 @@ import {
   fetchPendingFriend,
   acceptRequest,
   rejectRequest,
+  fetchMe,
 } from '../services/apiClient';
-
 import {
   setTokens,
   getRefreshToken,
   getAccessToken,
 } from '../services/storageClient';
+import { API_ENDPOINT } from '../services/config';
+
+import io from 'socket.io-client';
+
+let socket = io.connect(API_ENDPOINT);
+let uid = null;
+
+socket.on('notifiyNewLink', (payload) => {
+  chrome.notifications.create('', {
+    title: payload.title,
+    message: payload.message,
+    iconUrl: 'img/icons/icon@128.png',
+    type: 'basic',
+  });
+});
+
+function bindSocketToUID() {
+  getAccessToken()
+    .then((token) => {
+      fetchMe(token).then((user) => {
+        socket.emit('bindUID', user);
+        uid = user._id;
+      });
+    })
+    .catch(() => {
+      console.error('Failed to bind user id with socket');
+    });
+}
+
+function unbindSocketToUID() {
+  if (uid) {
+    socket.emit('unbindUID');
+  }
+}
+
+function emitLinkSent(recipientEmail) {
+  if (uid) {
+    const payload = { senderId: uid, recipientEmail };
+    socket.emit('linkSent', payload);
+  }
+}
 
 chrome.runtime.onMessage.addListener((msg, sender, response) => {
   switch (msg.type) {
     case 'popupInit':
       getRefreshToken()
-        .then((token) => {
+        .then(() => {
+          bindSocketToUID();
           response({ success: true });
         })
         .catch((err) => {
@@ -40,7 +82,10 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
       break;
     case 'logout':
       setTokens('', '')
-        .then(() => response({ success: true }))
+        .then(() => {
+          unbindSocketToUID();
+          response({ success: true });
+        })
         .catch((err) => response({ success: false, error: err }));
       break;
     case 'fetchMyFeed':
@@ -66,7 +111,10 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
         .then((token) => {
           const { linkUrl, recipientEmail } = msg.payload;
           sendLink(linkUrl, recipientEmail, token)
-            .then(() => response({ success: true }))
+            .then(() => {
+              emitLinkSent(recipientEmail);
+              response({ success: true });
+            })
             .catch((err) => response({ success: false, error: err }));
         })
         .catch((err) => response({ success: false, error: err }));
