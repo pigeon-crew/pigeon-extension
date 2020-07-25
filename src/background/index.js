@@ -15,6 +15,8 @@ import {
   setTokens,
   getRefreshToken,
   getAccessToken,
+  setNotifyCount,
+  getNotifyCount,
 } from '../services/storageClient';
 import { API_ENDPOINT } from '../services/config';
 
@@ -24,11 +26,24 @@ let socket = io.connect(API_ENDPOINT);
 let uid = null;
 
 socket.on('notifiyNewLink', (payload) => {
-  chrome.notifications.create('', {
-    title: payload.title,
-    message: payload.message,
-    iconUrl: 'img/icons/icon@128.png',
-    type: 'basic',
+  getNotifyCount((count) => {
+    console.log(count);
+    const newCount = count + 1 || 1;
+    console.log(newCount);
+    setNotifyCount(newCount, () => {
+      console.log(newCount);
+      if (newCount > 9) {
+        chrome.browserAction.setBadgeText({ text: '10+' });
+      } else {
+        chrome.browserAction.setBadgeText({ text: String(newCount) });
+      }
+      chrome.notifications.create('', {
+        title: payload.title,
+        message: payload.message,
+        iconUrl: 'img/icons/icon@128.png',
+        type: 'basic',
+      });
+    });
   });
 });
 
@@ -64,7 +79,11 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
       getRefreshToken()
         .then(() => {
           bindSocketToUID();
-          response({ success: true });
+          // clear notification
+          setNotifyCount(0, () => {
+            chrome.browserAction.setBadgeText({ text: '' });
+            response({ success: true });
+          });
         })
         .catch((err) => {
           response({ success: false });

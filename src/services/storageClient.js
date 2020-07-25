@@ -1,5 +1,18 @@
 /** @format */
 
+function setNotifyCount(count, callback) {
+  chrome.storage.local.set({ notifyCount: count }, () => {
+    callback();
+  });
+}
+
+function getNotifyCount(callback) {
+  chrome.storage.local.get('notifyCount', (keyVal) => {
+    const count = keyVal['notifyCount'];
+    callback(count);
+  });
+}
+
 function setRefreshToken(refreshToken, callback) {
   chrome.storage.local.set({ refreshToken }, () => {
     callback({ success: true });
@@ -59,4 +72,6 @@ export {
   setTokens,
   getRefreshToken,
   getAccessToken,
+  setNotifyCount,
+  getNotifyCount,
 };
