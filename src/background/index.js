@@ -9,6 +9,7 @@ import {
   acceptRequest,
   rejectRequest,
   fetchMe,
+  sendFriendRequest,
 } from '../services/apiClient';
 import {
   setTokens,
@@ -143,6 +144,16 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
         .then((token) => {
           const { friendReqId } = msg.payload;
           rejectRequest(friendReqId, token)
+            .then(() => response({ success: true }))
+            .catch((err) => response({ success: false, error: err }));
+        })
+        .catch((err) => response({ success: false, error: err }));
+      break;
+    case 'sendFriendRequest':
+      getAccessToken()
+        .then((token) => {
+          const { email } = msg.payload;
+          sendFriendRequest(email, token)
             .then(() => response({ success: true }))
             .catch((err) => response({ success: false, error: err }));
         })

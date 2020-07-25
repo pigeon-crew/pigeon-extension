@@ -3,8 +3,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { goBack } from 'react-chrome-extension-router';
 
-import { ADD_FRIEND_URL } from '../../services/config';
-
 import FriendReqItem from '../components/FriendReqItem';
 
 const ContactContainer = styled.div`
@@ -14,8 +12,14 @@ const ContactContainer = styled.div`
   overflow: scroll;
 `;
 
+const validateEmail = (email) => {
+  const emailRegexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  return emailRegexp.test(email);
+};
+
 const Contact = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
+  const [email, setEmail] = useState('');
 
   const openURL = (url) => {
     chrome.tabs.create({ active: true, url });
@@ -61,16 +65,42 @@ const Contact = () => {
     );
   };
 
+  const handleSendRequest = () => {
+    if (!validateEmail(email)) return;
+
+    const payload = { email };
+    chrome.runtime.sendMessage(
+      { type: 'sendFriendRequest', payload },
+      (response) => {
+        if (response && response.success) {
+          alert('Friend request sent!');
+          return;
+        }
+        alert('Friend Request Error');
+      }
+    );
+  };
+
+  const handleEmailChanged = (e) => {
+    setEmail(e.target.value);
+  };
+
   useEffect(() => {
     fetchPendingRequests();
   }, []);
 
   return (
     <ContactContainer>
-      <h1>Pending Requests</h1>
-      <button onClick={() => openURL(ADD_FRIEND_URL)}>Add Friends</button>
+      <h1>Manage Contact</h1>
       <button onClick={() => goBack()}>Back</button>
-
+      <h3>Add Friends</h3>
+      <input
+        placeholder="Email"
+        value={email}
+        onChange={handleEmailChanged}
+      ></input>
+      <button onClick={handleSendRequest}>Send Request</button>
+      <h3>Pending Requests</h3>
       {pendingRequests && pendingRequests.length > 0 ? (
         pendingRequests.map((data) => {
           return (

@@ -149,6 +149,23 @@ function fetchMe(ACCESS_TOKEN) {
   });
 }
 
+function sendFriendRequest(email, ACCESS_TOKEN) {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: `${API_ENDPOINT}/api/friends/request`,
+      method: 'POST',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify({ recipientEmail: email }),
+    })
+      .then(() => resolve())
+      .catch((err) => reject(err.response));
+  });
+}
+
 export {
   login,
   fetchCurrentFriend,
@@ -158,4 +175,5 @@ export {
   acceptRequest,
   rejectRequest,
   fetchMe,
+  sendFriendRequest,
 };
