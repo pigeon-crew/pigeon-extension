@@ -46,6 +46,7 @@ const Main = ({ setLoggedIn }) => {
     chrome.runtime.sendMessage({ type: 'fetchMyFeed', payload }, (response) => {
       if (response && response.success) {
         setMyFeed(response.links);
+        console.log(response.links);
         return;
       }
     });

@@ -42,7 +42,6 @@ const PFItem = ({ data }) => {
   };
 
   useEffect(() => {
-    console.log(linkpreview);
     getLinkPreview(data.linkUrl).then((response) => {
       const { favicons, siteName, title, description } = response;
       setLinkPreview({ favicons, siteName, title, description });
