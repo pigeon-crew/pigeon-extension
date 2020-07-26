@@ -61,7 +61,11 @@ const PFItem = ({ data }) => {
             <h3>
               {linkpreview.siteName} | {linkpreview.title}
             </h3>
-            <p>{linkpreview.description}</p>
+            <p>
+              {linkpreview.description
+                ? linkpreview.description.slice(0, 60)
+                : ''}
+            </p>
           </div>
         ) : (
           <div>
