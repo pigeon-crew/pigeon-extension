@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Toast = ({ toast, setToast }) => {
   useEffect(() => {

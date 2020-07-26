@@ -4,15 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { Router } from 'react-chrome-extension-router';
 import Login from './Login';
 import Main from './Main';
-
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//   if (request.message === 'hi') sendResponse({ message: 'hi to you' });
-// });
+import LoadingSkeleton from './LoadingSkeleton';
 
 const AppRouter = () => {
   const [loggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   chrome.runtime.sendMessage({ type: 'popupInit' }, (response) => {
+    setLoading(false);
     if (response && response.success) {
       setLoggedIn(true);
     }
@@ -20,10 +19,16 @@ const AppRouter = () => {
 
   return (
     <Router>
-      {loggedIn ? (
-        <Main setLoggedIn={setLoggedIn} />
+      {loading ? (
+        <LoadingSkeleton />
       ) : (
-        <Login setLoggedIn={setLoggedIn} />
+        <div>
+          {loggedIn ? (
+            <Main setLoggedIn={setLoggedIn} />
+          ) : (
+            <Login setLoggedIn={setLoggedIn} />
+          )}
+        </div>
       )}
     </Router>
   );
