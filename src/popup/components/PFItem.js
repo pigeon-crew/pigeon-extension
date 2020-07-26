@@ -20,13 +20,6 @@ const LinkContainer = styled.div`
   }
 `;
 
-const URLHeader = styled.p`
-  font-size: 14px;
-  font-family: 'Avenir';
-  font-weight: 600;
-  color: #797979;
-`;
-
 const Footer = styled.p`
   font-size: 12px;
   font-family: 'Avenir';
@@ -68,7 +61,7 @@ const PFItem = ({ data }) => {
             <h3>
               {linkpreview.siteName} | {linkpreview.title}
             </h3>
-            <p>{linkpreview.description.slice(0, 60)}...</p>
+            <p>{linkpreview.description}</p>
           </div>
         ) : (
           <div>
