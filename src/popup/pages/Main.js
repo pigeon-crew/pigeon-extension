@@ -7,6 +7,7 @@ import { goTo } from 'react-chrome-extension-router';
 
 import Contact from './Contact';
 import PFItem from '../components/PFItem';
+import Toast from '../components/Toast';
 
 import '../styles/Main.css';
 
@@ -26,6 +27,8 @@ const Headline = styled.p`
   font-family: 'Avenir';
   font-weight: 600;
   color: white;
+  margin: 5px;
+  padding: 0px;
 `;
 
 const validateEmail = (email) => {
@@ -38,6 +41,10 @@ const Main = ({ setLoggedIn }) => {
   const [recipient, setRecipient] = useState('');
   const [friends, setFriends] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
+  const [toast, setToast] = useState({
+    show: false,
+    message: '',
+  });
 
   const [myFeed, setMyFeed] = useState();
 
@@ -74,13 +81,13 @@ const Main = ({ setLoggedIn }) => {
       chrome.runtime.sendMessage({ type: 'sendLink', payload }, (response) => {
         if (response && response.success) {
           fetchMyFeed();
-          alert('Link sent succesfully!');
+          setToast({ show: true, message: '✅ Your link is sent succesfully' });
           // clear textfield
           setRecipient('');
           return;
         }
         console.log(response.error);
-        alert(response.error.data.message);
+        setToast({ show: true, message: '😔 Oops. Something went wrong' });
       });
     });
   };
@@ -91,7 +98,7 @@ const Main = ({ setLoggedIn }) => {
         setLoggedIn(false);
         return;
       }
-      alert('Error');
+      setToast({ show: true, message: '😔 Oops. Something went wrong' });
     });
   };
 
@@ -169,7 +176,10 @@ const Main = ({ setLoggedIn }) => {
   return (
     <PopupContainer>
       <ContentContainer>
-        <Headline>Share this link with</Headline>
+        <Headline style={{ display: 'inline-block' }}>
+          Share this link with
+        </Headline>
+        <Toast toast={toast} setToast={setToast} />
         <Autosuggest
           suggestions={suggestions}
           onSuggestionsFetchRequested={onSuggestionsFetchRequested}
@@ -177,13 +187,14 @@ const Main = ({ setLoggedIn }) => {
           getSuggestionValue={getSuggestionValue}
           renderSuggestion={renderSuggestion}
           alwaysRenderSuggestions={true}
-          highlightFirstSuggestion={true}
+          focusInputOnSuggestionClick={true}
+          highlightFirstSuggestion={false}
           onSuggestionSelected={onSuggestionSelected}
           inputProps={inputProps}
         />
-        <button onClick={() => goTo(Contact)}>Go To Contact</button>
-        <button onClick={logout}>Logout</button>
-        <Headline>My Inbox</Headline>
+
+        <Headline style={{ marginBottom: '15px' }}>My Inbox</Headline>
+
         {myFeed && myFeed.length > 0 ? (
           <div>
             {myFeed.map((val) => {
@@ -198,8 +209,11 @@ const Main = ({ setLoggedIn }) => {
             </button>
           </div>
         ) : (
-          <div>Your feed is empty oops</div>
+          <div></div>
         )}
+
+        <button onClick={() => goTo(Contact)}>Go To Contact</button>
+        <button onClick={logout}>Logout</button>
       </ContentContainer>
     </PopupContainer>
   );

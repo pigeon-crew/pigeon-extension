@@ -16,7 +16,8 @@ body {
   font-weight: 300;
   font-size: 16px;
   border: 1px solid #aaa;
-  border-radius: 4px;
+  border-radius: 8px;
+  margin: 10px 0px 10px 0px;
 }
 
 .react-autosuggest__input--focused {
@@ -38,7 +39,8 @@ body {
   top: 51px;
   width: 265px;
   border: 1px solid #aaa;
-  background-color: rgba(255, 255, 255, 0.9);
+  color: #fff;
+  background-color: rgba(74, 73, 75, 0.9);
   font-family: Helvetica, sans-serif;
   font-weight: 300;
   font-size: 16px;
@@ -59,5 +61,5 @@ body {
 }
 
 .react-autosuggest__suggestion--highlighted {
-  background-color: rgba(221, 221, 221, 0.8);
+  background-color: rgba(180, 180, 180, 0.8);
 }

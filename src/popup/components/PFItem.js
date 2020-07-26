@@ -7,7 +7,7 @@ import { getLinkPreview } from 'link-preview-js';
 
 const FeedContainer = styled.div`
   width: 240px;
-  border-radius: 12px;
+  border-radius: 8px;
   background-color: #f5f6f8;
   margin: auto;
   padding: 2px 10px;
