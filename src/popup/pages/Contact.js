@@ -20,10 +20,6 @@ const Contact = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [email, setEmail] = useState('');
 
-  const openURL = (url) => {
-    chrome.tabs.create({ active: true, url });
-  };
-
   const fetchPendingRequests = () => {
     chrome.runtime.sendMessage({ type: 'fetchPendingFriends' }, (response) => {
       if (response && response.success) {

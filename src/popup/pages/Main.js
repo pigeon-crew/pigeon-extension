@@ -42,7 +42,8 @@ const Main = ({ setLoggedIn }) => {
   const [myFeed, setMyFeed] = useState();
 
   const fetchMyFeed = () => {
-    chrome.runtime.sendMessage({ type: 'fetchMyFeed' }, (response) => {
+    const payload = { limit: 5 };
+    chrome.runtime.sendMessage({ type: 'fetchMyFeed', payload }, (response) => {
       if (response && response.success) {
         setMyFeed(response.links);
         return;
@@ -108,6 +109,10 @@ const Main = ({ setLoggedIn }) => {
       handleSend();
     }
     return;
+  };
+
+  const openURL = (url) => {
+    chrome.tabs.create({ active: true, url });
   };
 
   // *******************************
@@ -177,11 +182,20 @@ const Main = ({ setLoggedIn }) => {
         />
         <button onClick={() => goTo(Contact)}>Go To Contact</button>
         <button onClick={logout}>Logout</button>
-        <Headline>Inbox</Headline>
+        <Headline>My Inbox</Headline>
         {myFeed && myFeed.length > 0 ? (
-          myFeed.map((val) => {
-            return <PFItem key={val._id} data={val} />;
-          })
+          <div>
+            {myFeed.map((val) => {
+              return <PFItem key={val._id} data={val} />;
+            })}
+            <button
+              onClick={() => {
+                openURL('https://pigeon-webapp.herokuapp.com/');
+              }}
+            >
+              See More
+            </button>
+          </div>
         ) : (
           <div>Your feed is empty oops</div>
         )}

@@ -52,16 +52,15 @@ const PFItem = ({ data }) => {
     console.log(linkpreview);
     getLinkPreview(data.linkUrl).then((response) => {
       const { favicons, siteName, title, description } = response;
-      console.log(response);
       setLinkPreview({ favicons, siteName, title, description });
     });
   }, []);
 
   return (
     <FeedContainer>
-      <LinkContainer>
+      <LinkContainer onClick={() => openURL(data.linkUrl)}>
         {linkpreview ? (
-          <div onClick={() => openURL(data.linkUrl)}>
+          <div>
             <img
               src={linkpreview.favicons[0]}
               style={{ height: '20px', width: '20px', display: 'inline-block' }}
@@ -69,14 +68,12 @@ const PFItem = ({ data }) => {
             <h3>
               {linkpreview.siteName} | {linkpreview.title}
             </h3>
-            <p>{linkpreview.description.slice(0, 60)}</p>
+            <p>{linkpreview.description.slice(0, 60)}...</p>
           </div>
         ) : (
           <div>
             <h3>Loading...</h3>
-            <URLHeader onClick={() => openURL(data.linkUrl)}>
-              {data.linkUrl}
-            </URLHeader>
+            <h3>{data.linkUrl}</h3>
           </div>
         )}
       </LinkContainer>
