@@ -38,6 +38,7 @@ const Main = ({ setLoggedIn }) => {
   const [recipient, setRecipient] = useState('');
   const [friends, setFriends] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
+
   const [myFeed, setMyFeed] = useState();
 
   const fetchMyFeed = () => {
@@ -53,6 +54,7 @@ const Main = ({ setLoggedIn }) => {
     chrome.runtime.sendMessage({ type: 'fetchCurrentFriend' }, (response) => {
       if (response && response.success) {
         setFriends(response.friend);
+        setSuggestions(response.friend);
         return;
       }
     });
@@ -71,6 +73,7 @@ const Main = ({ setLoggedIn }) => {
         if (response && response.success) {
           fetchMyFeed();
           alert('Link sent succesfully!');
+          // clear textfield
           setRecipient('');
           return;
         }
@@ -96,9 +99,15 @@ const Main = ({ setLoggedIn }) => {
   }, []);
 
   const handleEnterKey = (e) => {
-    if (e.key === 'Enter' && validateEmail(recipient)) {
+    // only send when there are no suggestions left
+    if (
+      e.key === 'Enter' &&
+      validateEmail(recipient) &&
+      suggestions.length === 0
+    ) {
       handleSend();
     }
+    return;
   };
 
   // *******************************
@@ -125,8 +134,8 @@ const Main = ({ setLoggedIn }) => {
     );
   };
 
-  // auto suggest related functions
   const onRecipientChanged = (e, { newValue }) => {
+    console.log(suggestions);
     setRecipient(newValue);
   };
 
@@ -135,6 +144,11 @@ const Main = ({ setLoggedIn }) => {
   };
 
   const onSuggestionsClearRequested = () => {
+    setSuggestions([]);
+  };
+
+  const onSuggestionSelected = () => {
+    // clear suggestions after selected
     setSuggestions([]);
   };
 
@@ -156,12 +170,14 @@ const Main = ({ setLoggedIn }) => {
           onSuggestionsClearRequested={onSuggestionsClearRequested}
           getSuggestionValue={getSuggestionValue}
           renderSuggestion={renderSuggestion}
+          alwaysRenderSuggestions={true}
+          highlightFirstSuggestion={true}
+          onSuggestionSelected={onSuggestionSelected}
           inputProps={inputProps}
         />
-        <button onClick={handleSend}>Send</button>
         <button onClick={() => goTo(Contact)}>Go To Contact</button>
         <button onClick={logout}>Logout</button>
-        <Headline>Pigeon Feed</Headline>
+        <Headline>Inbox</Headline>
         {myFeed && myFeed.length > 0 ? (
           myFeed.map((val) => {
             return <PFItem key={val._id} data={val} />;

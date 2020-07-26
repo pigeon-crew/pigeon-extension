@@ -9,7 +9,7 @@ body {
 }
 
 .react-autosuggest__input {
-  width: 240px;
+  width: 225px;
   height: 30px;
   padding: 10px 20px;
   font-family: Helvetica, sans-serif;
@@ -36,9 +36,9 @@ body {
   display: block;
   position: absolute;
   top: 51px;
-  width: 280px;
+  width: 265px;
   border: 1px solid #aaa;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.9);
   font-family: Helvetica, sans-serif;
   font-weight: 300;
   font-size: 16px;
@@ -59,5 +59,5 @@ body {
 }
 
 .react-autosuggest__suggestion--highlighted {
-  background-color: #ddd;
+  background-color: rgba(221, 221, 221, 0.8);
 }

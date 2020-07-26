@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { goBack } from 'react-chrome-extension-router';
-
 import FriendReqItem from '../components/FriendReqItem';
 
 const ContactContainer = styled.div`

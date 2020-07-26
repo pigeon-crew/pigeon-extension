@@ -1,8 +1,9 @@
 /** @format */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { parseISO, formatDistanceToNow } from 'date-fns';
+import { getLinkPreview } from 'link-preview-js';
 
 const FeedContainer = styled.div`
   width: 240px;
@@ -13,15 +14,17 @@ const FeedContainer = styled.div`
   margin-bottom: 20px;
 `;
 
+const LinkContainer = styled.div`
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 const URLHeader = styled.p`
   font-size: 14px;
   font-family: 'Avenir';
   font-weight: 600;
   color: #797979;
-
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 const Footer = styled.p`
@@ -32,6 +35,8 @@ const Footer = styled.p`
 `;
 
 const PFItem = ({ data }) => {
+  const [linkpreview, setLinkPreview] = useState();
+
   const openURL = (url) => {
     chrome.tabs.create({ active: true, url });
   };
@@ -43,11 +48,38 @@ const PFItem = ({ data }) => {
     return `${timePeriod} ago`.replace(/almost|about|over?/gi, '');
   };
 
+  useEffect(() => {
+    console.log(linkpreview);
+    getLinkPreview(data.linkUrl).then((response) => {
+      const { favicons, siteName, title, description } = response;
+      console.log(response);
+      setLinkPreview({ favicons, siteName, title, description });
+    });
+  }, []);
+
   return (
     <FeedContainer>
-      <URLHeader onClick={() => openURL(data.linkUrl)}>
-        {data.linkUrl}
-      </URLHeader>
+      <LinkContainer>
+        {linkpreview ? (
+          <div onClick={() => openURL(data.linkUrl)}>
+            <img
+              src={linkpreview.favicons[0]}
+              style={{ height: '20px', width: '20px', display: 'inline-block' }}
+            ></img>
+            <h3>
+              {linkpreview.siteName} | {linkpreview.title}
+            </h3>
+            <p>{linkpreview.description.slice(0, 60)}</p>
+          </div>
+        ) : (
+          <div>
+            <h3>Loading...</h3>
+            <URLHeader onClick={() => openURL(data.linkUrl)}>
+              {data.linkUrl}
+            </URLHeader>
+          </div>
+        )}
+      </LinkContainer>
       <Footer>
         {data.senderName} | {renderTimestamp()}
       </Footer>
