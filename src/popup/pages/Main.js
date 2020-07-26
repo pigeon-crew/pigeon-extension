@@ -28,6 +28,11 @@ const Headline = styled.p`
   color: white;
 `;
 
+const validateEmail = (email) => {
+  const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return emailRegex.test(email);
+};
+
 // Component
 const Main = ({ setLoggedIn }) => {
   const [recipient, setRecipient] = useState('');
@@ -66,6 +71,7 @@ const Main = ({ setLoggedIn }) => {
         if (response && response.success) {
           fetchMyFeed();
           alert('Link sent succesfully!');
+          setRecipient('');
           return;
         }
         console.log(response.error);
@@ -90,12 +96,9 @@ const Main = ({ setLoggedIn }) => {
   }, []);
 
   const handleEnterKey = (e) => {
-    // if (e.key === 'Enter') {
-    //   handleSend();
-    //   e.preventDefault();
-    // }
-
-    console.log('todo');
+    if (e.key === 'Enter' && validateEmail(recipient)) {
+      handleSend();
+    }
   };
 
   // *******************************
