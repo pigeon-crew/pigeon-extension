@@ -4,10 +4,13 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Autosuggest from 'react-autosuggest';
 import { goTo } from 'react-chrome-extension-router';
+import { FaSearch } from 'react-icons/fa';
+import { IconContext } from 'react-icons';
 
 import Contact from './Contact';
 import PFItem from '../components/PFItem';
 import Toast from '../components/Toast';
+import CollapsibleInput from '../components/CollapsibleInput';
 
 import '../styles/Main.css';
 
@@ -45,6 +48,9 @@ const Main = ({ setLoggedIn }) => {
     show: false,
     message: '',
   });
+  const [input, setInput] = useState({
+    show: false,
+  });
 
   const [myFeed, setMyFeed] = useState();
 
@@ -53,7 +59,6 @@ const Main = ({ setLoggedIn }) => {
     chrome.runtime.sendMessage({ type: 'fetchMyFeed', payload }, (response) => {
       if (response && response.success) {
         setMyFeed(response.links);
-        console.log(response.links);
         return;
       }
     });
@@ -148,7 +153,6 @@ const Main = ({ setLoggedIn }) => {
   };
 
   const onRecipientChanged = (e, { newValue }) => {
-    console.log(suggestions);
     setRecipient(newValue);
   };
 
@@ -193,8 +197,18 @@ const Main = ({ setLoggedIn }) => {
           inputProps={inputProps}
         />
 
-        <Headline style={{ marginBottom: '15px' }}>My Inbox</Headline>
-
+        <Headline style={{ marginBottom: '15px', display: 'inline-block' }}>
+          My Inbox
+        </Headline>
+        <div
+          style={{ marginLeft: '143px', display: 'inline-block' }}
+          onClick={() => setInput({ show: !input.show })}
+        >
+          <IconContext.Provider value={{ color: 'white', size: '17px' }}>
+            <FaSearch />
+          </IconContext.Provider>
+        </div>
+        <CollapsibleInput input={input} setInput={setInput} />
         {myFeed && myFeed.length > 0 ? (
           <div>
             {myFeed.map((val) => {

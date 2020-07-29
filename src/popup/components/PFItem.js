@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { parseISO, formatDistanceToNow } from 'date-fns';
-import { getLinkPreview } from 'link-preview-js';
 
 const FeedContainer = styled.div`
   width: 240px;
@@ -42,10 +41,19 @@ const PFItem = ({ data }) => {
   };
 
   useEffect(() => {
-    getLinkPreview(data.linkUrl).then((response) => {
-      const { favicons, siteName, title, description } = response;
-      setLinkPreview({ favicons, siteName, title, description });
-    });
+    const payload = { url: data.linkUrl };
+
+    chrome.runtime.sendMessage(
+      { type: 'fetchLinkPreview', payload },
+      (response) => {
+        if (response && response.success) {
+          const fetchedPreview = response.data;
+          setLinkPreview(fetchedPreview);
+          return;
+        }
+        console.error(response.error);
+      }
+    );
   }, []);
 
   return (
@@ -54,17 +62,16 @@ const PFItem = ({ data }) => {
         {linkpreview ? (
           <div>
             <img
-              src={linkpreview.favicons[0]}
-              style={{ height: '20px', width: '20px', display: 'inline-block' }}
-            ></img>
-            <h3>
-              {linkpreview.siteName} | {linkpreview.title}
-            </h3>
-            <p>
-              {linkpreview.description
-                ? linkpreview.description.slice(0, 60)
-                : ''}
-            </p>
+              src={linkpreview.img}
+              style={{
+                height: '100px',
+                width: '200px',
+                objectFit: 'cover',
+                margin: '10px',
+              }}
+            />
+            <h3>{linkpreview.title}</h3>
+            <p>{linkpreview.description}</p>
           </div>
         ) : (
           <div>

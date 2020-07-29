@@ -89,6 +89,7 @@
     "react-autosuggest": "^10.0.2",
     "react-dev-utils": "^7.0.1",
     "react-dom": "^16.7.0",
+    "react-icons": "^3.10.0",
     "react-tiny-link": "^3.6.0",
     "resolve": "1.8.1",
     "sa-link-preview": "^1.0.2",

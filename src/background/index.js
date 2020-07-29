@@ -10,6 +10,7 @@ import {
   rejectRequest,
   fetchMe,
   sendFriendRequest,
+  fetchLinkPreview,
 } from '../services/apiClient';
 import {
   setTokens,
@@ -177,6 +178,12 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
             .then(() => response({ success: true }))
             .catch((err) => response({ success: false, error: err }));
         })
+        .catch((err) => response({ success: false, error: err }));
+      break;
+    case 'fetchLinkPreview':
+      const { url } = msg.payload;
+      fetchLinkPreview('', url)
+        .then((data) => response({ success: true, data }))
         .catch((err) => response({ success: false, error: err }));
       break;
     default:

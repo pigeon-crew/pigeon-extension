@@ -173,6 +173,28 @@ function sendFriendRequest(email, ACCESS_TOKEN) {
   });
 }
 
+function fetchLinkPreview(ACCESS_TOKEN, previewUrl) {
+  console.log(previewUrl);
+  return new Promise((resolve, reject) => {
+    axios({
+      url: `${API_ENDPOINT}/api/links/preview`,
+      method: 'POST',
+      timeout: 0,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify({
+        previewUrl,
+      }),
+    })
+      .then((res) => {
+        const preview = res.data.data;
+        resolve(preview);
+      })
+      .catch((err) => reject(err.response));
+  });
+}
+
 export {
   login,
   fetchCurrentFriend,
@@ -183,4 +205,5 @@ export {
   rejectRequest,
   fetchMe,
   sendFriendRequest,
+  fetchLinkPreview,
 };
