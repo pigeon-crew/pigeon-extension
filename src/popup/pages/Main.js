@@ -34,16 +34,68 @@ const Headline = styled.p`
   padding: 0px;
 `;
 
+const SearchButton = styled.div`
+  margin-left: 143px;
+  display: inline-block;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const MoreButton = styled.button`
+  text-align: center;
+  display: inline-block;
+   padding: 0.3em 1.2em;
+   margin: 0 0.1em 0.1em 0;
+   border: 0.16em solid rgba(255, 255, 255, 0);
+   border-radius: 20px;
+   box-sizing: border-box;
+   text-decoration: none;
+   font-family: 'Avenir';
+   font-weight: 400;
+   color: #ffffff;
+   text-shadow: 0 0.04em 0.04em rgba(0, 0, 0, 0.35);
+   text-align: center;
+   transition: all 0.2s;
+  background-color: #4e9af1;
+  padding: 10px 50px;
+  &:hover {
+    cursor: pointer;
+     border-color: rgba(255, 255, 255, 1);
+  }
+`;
+
+const SecondaryButton = styled.button`
+  border: none;
+  background-color: inherit;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+  font-family: 'Avenir';
+   font-weight: 400;
+   color: #ffffff;
+  font-size: 12px;
+`;
+
 const validateEmail = (email) => {
   const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return emailRegex.test(email);
 };
+
+const Tips = [
+  'Start typing for suggestions',
+  'Hit Enter to send',
+  'Hit Esc to hide suggestions',
+];
+const randomTips = Tips[Math.floor(Math.random() * Tips.length)];
 
 // Component
 const Main = ({ setLoggedIn }) => {
   const [recipient, setRecipient] = useState('');
   const [friends, setFriends] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
+
   const [toast, setToast] = useState({
     show: false,
     message: '',
@@ -170,7 +222,7 @@ const Main = ({ setLoggedIn }) => {
   };
 
   const inputProps = {
-    placeholder: 'Hit Enter to Send',
+    placeholder: randomTips,
     value: recipient,
     onChange: onRecipientChanged,
     onKeyDown: handleEnterKey,
@@ -200,34 +252,33 @@ const Main = ({ setLoggedIn }) => {
         <Headline style={{ marginBottom: '15px', display: 'inline-block' }}>
           My Inbox
         </Headline>
-        <div
-          style={{ marginLeft: '143px', display: 'inline-block' }}
-          onClick={() => setInput({ show: !input.show })}
-        >
+        <SearchButton onClick={() => setInput({ show: !input.show })}>
           <IconContext.Provider value={{ color: 'white', size: '17px' }}>
             <FaSearch />
           </IconContext.Provider>
-        </div>
+        </SearchButton>
         <CollapsibleInput input={input} setInput={setInput} />
         {myFeed && myFeed.length > 0 ? (
           <div>
             {myFeed.map((val) => {
               return <PFItem key={val._id} data={val} />;
             })}
-            <button
-              onClick={() => {
-                openURL('https://pigeon-webapp.herokuapp.com/');
-              }}
+            <MoreButton
+              style={{ margin: '0px 0px 20px 50px' }}
+              onClick={() => openURL('https://pigeon-webapp.herokuapp.com/')}
             >
               See More
-            </button>
+            </MoreButton>
           </div>
         ) : (
           <div></div>
         )}
-
-        <button onClick={() => goTo(Contact)}>Go To Contact</button>
-        <button onClick={logout}>Logout</button>
+        <div style={{ marginLeft: '50px' }}>
+          <SecondaryButton onClick={() => goTo(Contact)}>
+            Manage Contact
+          </SecondaryButton>
+          <SecondaryButton onClick={logout}>Logout</SecondaryButton>
+        </div>
       </ContentContainer>
     </PopupContainer>
   );

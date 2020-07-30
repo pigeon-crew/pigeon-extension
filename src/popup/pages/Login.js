@@ -18,6 +18,7 @@ const Headline = styled.p`
   font-family: 'Avenir';
   font-weight: 600;
   color: white;
+  margin: 0px;
 `;
 
 const InputField = styled.input`
@@ -42,6 +43,14 @@ const InputField = styled.input`
     border: 3px solid #ff8686;
     color: black;
   }
+`;
+
+const Paragraph = styled.div`
+  font-size: 12px;
+  font-family: 'Avenir';
+  font-weight: 400;
+  color: white;
+  margin: 10px 0px 15px 0px;
 `;
 
 const Login = ({ setLoggedIn }) => {
@@ -77,9 +86,9 @@ const Login = ({ setLoggedIn }) => {
     <LoginContainer>
       <ContentContainer>
         <Headline>Welcome Back!</Headline>
-        <p>
+        <Paragraph>
           Don't have an account yet? <a href="#">Sign Up</a>
-        </p>
+        </Paragraph>
         <InputField
           placeholder="Email"
           value={email}

@@ -5,11 +5,11 @@ import styled from 'styled-components';
 import { parseISO, formatDistanceToNow } from 'date-fns';
 
 const FeedContainer = styled.div`
-  width: 240px;
+  width: 260px;
   border-radius: 8px;
   background-color: #f5f6f8;
   margin: auto;
-  padding: 2px 10px;
+  padding: 0px;
   margin-bottom: 20px;
 `;
 
@@ -24,21 +24,31 @@ const Footer = styled.p`
   font-family: 'Avenir';
   font-weight: 400;
   color: #797979;
+  padding: 10px;
+`;
+
+const Title = styled.div`
+  font-size: 14px;
+  font-family: 'Avenir';
+  font-weight: 600;
+  color: #2f3640;
+`;
+
+const Paragraph = styled.div`
+  margin-top: 10px;
+  font-size: 12px;
+  font-family: 'Avenir';
+  font-weight: 400;
+  color: #2f3640;
+`;
+
+const ContentContainer = styled.div`
+  padding: 10px 10px 0px 10px;
 `;
 
 const PFItem = ({ data }) => {
   const [linkpreview, setLinkPreview] = useState();
-
-  const openURL = (url) => {
-    chrome.tabs.create({ active: true, url });
-  };
-
-  const renderTimestamp = () => {
-    const date = parseISO(data.timestamp);
-    const timePeriod = formatDistanceToNow(date);
-
-    return `${timePeriod} ago`.replace(/almost|about|over?/gi, '');
-  };
+  const [imageError, setImageError] = useState(false);
 
   useEffect(() => {
     const payload = { url: data.linkUrl };
@@ -56,27 +66,46 @@ const PFItem = ({ data }) => {
     );
   }, []);
 
+  const openURL = (url) => {
+    chrome.tabs.create({ active: true, url });
+  };
+
+  const renderTimestamp = () => {
+    const date = parseISO(data.timestamp);
+    const timePeriod = formatDistanceToNow(date);
+
+    return `${timePeriod} ago`.replace(/almost|about|over?/gi, '');
+  };
+
   return (
     <FeedContainer>
       <LinkContainer onClick={() => openURL(data.linkUrl)}>
         {linkpreview ? (
           <div>
-            <img
-              src={linkpreview.img}
-              style={{
-                height: '100px',
-                width: '200px',
-                objectFit: 'cover',
-                margin: '10px',
-              }}
-            />
-            <h3>{linkpreview.title}</h3>
-            <p>{linkpreview.description}</p>
+            {!imageError && (
+              <img
+                src={linkpreview.img}
+                onError={() => setImageError(true)}
+                style={{
+                  height: '120px',
+                  width: '260px',
+                  objectFit: 'cover',
+                  borderTopLeftRadius: '8px',
+                  borderTopRightRadius: '8px',
+                }}
+              />
+            )}
+            <ContentContainer>
+              <Title>{linkpreview.title}</Title>
+              <Paragraph>{linkpreview.description}</Paragraph>
+            </ContentContainer>
           </div>
         ) : (
           <div>
-            <h3>Loading...</h3>
-            <h3>{data.linkUrl}</h3>
+            <ContentContainer>
+              <Title>Loading...</Title>
+              <Paragraph>{data.linkUrl}</Paragraph>
+            </ContentContainer>
           </div>
         )}
       </LinkContainer>
