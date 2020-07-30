@@ -1,5 +1,4 @@
 /** @format */
-
 export const API_ENDPOINT = 'https://pigeon-webapp.herokuapp.com';
 export const ADD_FRIEND_URL = 'https://pigeon-webapp.herokuapp.com';
 

@@ -83,9 +83,10 @@ const PFItem = ({ data }) => {
       <LinkContainer onClick={() => openURL(data.linkUrl)}>
         {linkpreview ? (
           <div>
-            {linkpreview.img && (
+            {linkpreview.img && !imageError && (
               <img
                 src={linkpreview.img}
+                onError={() => setImageError(true)}
                 style={{
                   height: '120px',
                   width: '260px',
