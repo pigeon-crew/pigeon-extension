@@ -59,6 +59,7 @@ const PFItem = ({ data }) => {
         if (response && response.success) {
           const fetchedPreview = response.data;
           setLinkPreview(fetchedPreview);
+          console.log(fetchedPreview);
           return;
         }
         console.error(response.error);
@@ -82,10 +83,9 @@ const PFItem = ({ data }) => {
       <LinkContainer onClick={() => openURL(data.linkUrl)}>
         {linkpreview ? (
           <div>
-            {!imageError && (
+            {linkpreview.img && (
               <img
                 src={linkpreview.img}
-                onError={() => setImageError(true)}
                 style={{
                   height: '120px',
                   width: '260px',
@@ -96,7 +96,13 @@ const PFItem = ({ data }) => {
               />
             )}
             <ContentContainer>
-              <Title>{linkpreview.title}</Title>
+              <Title>
+                <img
+                  src={linkpreview.favicon}
+                  style={{ padding: 0, marginRight: '5px' }}
+                />
+                {linkpreview.title}
+              </Title>
               <Paragraph>{linkpreview.description}</Paragraph>
             </ContentContainer>
           </div>
