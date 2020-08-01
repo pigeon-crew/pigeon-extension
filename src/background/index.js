@@ -131,8 +131,8 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
     case 'sendLink':
       getAccessToken()
         .then((token) => {
-          const { linkUrl, recipientEmail } = msg.payload;
-          sendLink(linkUrl, recipientEmail, token)
+          const { linkUrl, recipientEmail, message } = msg.payload;
+          sendLink(token, linkUrl, recipientEmail, message)
             .then(() => {
               emitLinkSent(recipientEmail);
               response({ success: true });
