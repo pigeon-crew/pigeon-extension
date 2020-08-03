@@ -1,6 +1,7 @@
 /** @format */
 export const API_ENDPOINT = 'https://pigeon-webapp.herokuapp.com';
 export const ADD_FRIEND_URL = 'https://pigeon-webapp.herokuapp.com';
+export const SIGNUP_URL = 'https://pigeon-webapp.herokuapp.com';
 
 // Below are for development only
 // export const API_ENDPOINT = 'http://localhost:5000';

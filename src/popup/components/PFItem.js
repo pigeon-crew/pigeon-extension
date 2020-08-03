@@ -9,7 +9,7 @@ const FeedContainer = styled.div`
   border-radius: 8px;
   background-color: white;
   margin: auto;
-  padding: 10px 0px 10px 0px;
+  padding: 7px 0px 7px 0px;
   margin-bottom: 20px;
 `;
 
@@ -26,16 +26,22 @@ const Title = styled.div`
   color: #2f3640;
 `;
 
+const URLTitle = styled.div`
+  font-size: 14px;
+  font-family: 'Avenir';
+  font-weight: 600;
+  color: #2f3640;
+`;
+
 const Paragraph = styled.div`
-  margin-top: 10px;
-  font-size: 12px;
+  margin-top: 12px;
   font-family: 'Avenir';
   font-weight: 400;
   color: #2f3640;
 `;
 
 const ContentContainer = styled.div`
-  padding: 15px;
+  padding: 3px 8px 10px 8px;
   background-color: #ecf0f1;
 `;
 
@@ -43,13 +49,31 @@ const SecondaryButton = styled.button`
   border: none;
   background-color: inherit;
   font-size: 16px;
-  cursor: pointer;
   display: inline-block;
   font-family: 'Avenir';
   font-weight: 600;
   color: #2f3640;
   font-size: 14px;
   outline-style: none;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 2px 20px 5px 20px;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+`;
+
+const ButtonContainer = styled.div`
+  margin: 6px 0px 0px 0px;
+  padding: 0px;
+  display: flex;
+  justify-content: space-around;
+`;
+
+const Divider = styled.hr`
+  border-top: 0.5px solid #ecf0f1;
+  margin: 8px 10px 0px 10px;
 `;
 
 const PFItem = ({ data }) => {
@@ -64,6 +88,7 @@ const PFItem = ({ data }) => {
       (response) => {
         if (response && response.success) {
           const fetchedPreview = response.data;
+
           setLinkPreview(fetchedPreview);
           return;
         }
@@ -89,12 +114,26 @@ const PFItem = ({ data }) => {
       .replace(/hours?/gi, 'h');
   };
 
+  const shortenString = (str) => {
+    if (str.length < 35) {
+      return str;
+    }
+    return `${str.substring(0, 30)}...`;
+  };
+
   return (
     <FeedContainer>
       <div style={{ padding: '0px 10px 10px 10px' }}>
-        <Title>
-          {data.senderName} {renderTimestamp()}
-        </Title>
+        <Title style={{ display: 'inline-block' }}>{data.senderName}</Title>
+        <Paragraph
+          style={{
+            display: 'inline-block',
+            marginLeft: '5px',
+            color: '#7f8c8d',
+          }}
+        >
+          {renderTimestamp()}
+        </Paragraph>
         {data.message && <Paragraph>{data.message}</Paragraph>}
       </div>
       <LinkContainer
@@ -111,7 +150,7 @@ const PFItem = ({ data }) => {
                 src={linkpreview.img}
                 onError={() => setImageError(true)}
                 style={{
-                  height: '120px',
+                  height: '100px',
                   width: '260px',
                   objectFit: 'cover',
                 }}
@@ -119,26 +158,30 @@ const PFItem = ({ data }) => {
             )}
 
             <ContentContainer>
-              <Title>
+              <Paragraph style={{ fontSize: '10px', color: '#7f8c8d' }}>
+                {linkpreview.domain.toUpperCase()}
+              </Paragraph>
+              <URLTitle>
                 <img
                   src={linkpreview.favicon}
                   style={{ padding: 0, marginRight: '5px' }}
                 />
                 {linkpreview.title}
-              </Title>
-              <Paragraph>{data.linkUrl}</Paragraph>
+              </URLTitle>
             </ContentContainer>
           </div>
         ) : (
           <ContentContainer>
-            <Title>{data.linkUrl}</Title>
-            <Paragraph>Loading...</Paragraph>
+            <Paragraph style={{ color: '#7f8c8d' }}>Loading...</Paragraph>
+            <URLTitle>{shortenString(data.linkUrl)}</URLTitle>
           </ContentContainer>
         )}
       </LinkContainer>
-      <SecondaryButton>👍 Like</SecondaryButton>
-      <SecondaryButton>🚀 Comment</SecondaryButton>
-      <SecondaryButton>✅ Done</SecondaryButton>
+      <Divider />
+      <ButtonContainer>
+        <SecondaryButton>👍 Like</SecondaryButton>
+        <SecondaryButton>✅ Done</SecondaryButton>
+      </ButtonContainer>
     </FeedContainer>
   );
 };
