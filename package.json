@@ -84,6 +84,7 @@
     "postcss-preset-env": "6.3.1",
     "postcss-safe-parser": "4.0.1",
     "prop-types": "^15.6.2",
+    "psl": "^1.8.0",
     "react": "^16.7.0",
     "react-app-polyfill": "^0.2.0",
     "react-autosuggest": "^10.0.2",

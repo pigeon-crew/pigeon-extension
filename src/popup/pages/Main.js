@@ -126,14 +126,14 @@ const Main = ({ setLoggedIn }) => {
     });
   };
 
-  const handleSend = () => {
+  const handleSend = (email, message) => {
     const query = { active: true, windowId: chrome.windows.WINDOW_ID_CURRENT };
 
     chrome.tabs.query(query, (tabs) => {
       const linkUrl = tabs[0].url;
-      const recipientEmail = recipient;
+      const recipientEmail = email;
 
-      const payload = { linkUrl, recipientEmail };
+      const payload = { linkUrl, recipientEmail, message };
 
       chrome.runtime.sendMessage({ type: 'sendLink', payload }, (response) => {
         if (response && response.success) {
@@ -166,12 +166,18 @@ const Main = ({ setLoggedIn }) => {
 
   const handleEnterKey = (e) => {
     // only send when there are no suggestions left
-    if (
-      e.key === 'Enter' &&
-      validateEmail(recipient) &&
-      suggestions.length === 0
-    ) {
-      handleSend();
+    const separatorIndex = recipient.indexOf(',');
+    let email;
+    let message;
+    if (separatorIndex !== -1) {
+      email = recipient.substr(0, separatorIndex).trim();
+      message = recipient.substr(separatorIndex + 1).trim();
+    } else {
+      email = recipient;
+    }
+
+    if (e.key === 'Enter' && validateEmail(email) && suggestions.length === 0) {
+      handleSend(email, message);
     }
     return;
   };

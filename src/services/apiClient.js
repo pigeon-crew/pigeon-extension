@@ -47,7 +47,14 @@ function fetchMyFeed(ACCESS_TOKEN, limit = '') {
   });
 }
 
-function sendLink(linkUrl, recipientEmail, ACCESS_TOKEN) {
+function sendLink(ACCESS_TOKEN, linkUrl, recipientEmail, message) {
+  const data = {
+    linkUrl,
+    recipientEmail,
+  };
+
+  if (message) data.message = message;
+
   return new Promise((resolve, reject) => {
     axios({
       url: `${API_ENDPOINT}/api/links/create`,
@@ -57,10 +64,7 @@ function sendLink(linkUrl, recipientEmail, ACCESS_TOKEN) {
         Authorization: `Bearer ${ACCESS_TOKEN}`,
         'Content-Type': 'application/json',
       },
-      data: JSON.stringify({
-        linkUrl,
-        recipientEmail,
-      }),
+      data: JSON.stringify(data),
     })
       .then(() => resolve())
       .catch((err) => reject(err.response));
@@ -174,7 +178,6 @@ function sendFriendRequest(email, ACCESS_TOKEN) {
 }
 
 function fetchLinkPreview(ACCESS_TOKEN, previewUrl) {
-  console.log(previewUrl);
   return new Promise((resolve, reject) => {
     axios({
       url: `${API_ENDPOINT}/api/links/preview`,

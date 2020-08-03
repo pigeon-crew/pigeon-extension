@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+import { SIGNUP_URL } from '../../services/config';
+
 const LoginContainer = styled.div`
   text-align: left;
   width: 310px;
@@ -57,6 +59,10 @@ const Login = ({ setLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const openURL = (url) => {
+    chrome.tabs.create({ active: true, url });
+  };
+
   const handleLogin = () => {
     if (!email) return;
     if (!password) return;
@@ -87,7 +93,10 @@ const Login = ({ setLoggedIn }) => {
       <ContentContainer>
         <Headline>Welcome Back!</Headline>
         <Paragraph>
-          Don't have an account yet? <a href="#">Sign Up</a>
+          Don't have an account yet?{' '}
+          <a href="#" onClick={() => openURL(SIGNUP_URL)}>
+            Sign Up
+          </a>
         </Paragraph>
         <InputField
           placeholder="Email"
