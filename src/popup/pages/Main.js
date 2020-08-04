@@ -44,27 +44,34 @@ const SearchButton = styled.div`
 `;
 
 const MoreButton = styled.button`
+  font-family: 'Avenir';
+  border-radius: 10px;
+  font-weight: 400;
+  background-color: #6593F5;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  border-style: none;
+  text-decoration: none;
   text-align: center;
+  transition: all 0.2s;
+  margin-left: 30%;
   display: inline-block;
-   padding: 0.3em 1.2em;
-   margin: 0 0.1em 0.1em 0;
-   border: 0.16em solid rgba(255, 255, 255, 0);
-   border-radius: 20px;
-   box-sizing: border-box;
-   text-decoration: none;
-   font-family: 'Avenir';
-   font-weight: 400;
-   color: #ffffff;
-   text-shadow: 0 0.04em 0.04em rgba(0, 0, 0, 0.35);
-   text-align: center;
-   transition: all 0.2s;
-  background-color: #4e9af1;
-  padding: 10px 50px;
+  border: 0.16em solid rgba(255, 255, 255, 0);
   &:hover {
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 10px;
+    opacity: 0.9;
+    background-color: #658feb;
     cursor: pointer;
-     border-color: rgba(255, 255, 255, 1);
   }
+  &:active {
+    opacity: 0.6;
 `;
+
 
 const Paragraph = styled.div`
   font-size: 14px;
@@ -288,7 +295,7 @@ const Main = ({ setLoggedIn }) => {
                   );
                 })}
                 <MoreButton
-                  style={{ margin: '0px 0px 20px 50px' }}
+                  style={{ margin: '0px 0px 20px 75px' }}
                   onClick={() =>
                     openURL('https://pigeon-webapp.herokuapp.com/')
                   }
