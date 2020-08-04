@@ -26,29 +26,54 @@ const Subtitle = styled.h3`
 `;
 
 const Desc = styled.div`
-  font-size: 14px;
+  font-size: 13px;
   font-family: "Avenir";
-  font-weight: 500;
-  color: white;
+  font-weight: 200;
+  font-style: italic;
+  color: #ff8082;
   margin: 10px 0px 15px 0px;
+  margin-top: 2px;
 `;
 
 const StyledButton = styled.button`
   border: none;
-  background-color: #f5f5f5;
-  padding: 5px 15px;
+  color: white;
+  background-color: #6593F5;
+  padding: 7px 17px;
   border-radius: 10px;
-  font-size: 16px;
+  font-size: 13px;
   cursor: pointer;
   display: inline-block;
   font-family: "Avenir";
-  font-size: 12px;
-  font-weight: 600px;
+  font-weight: 500;
 
   &:hover {
     box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 10px;
     opacity: 0.9;
-    background-color: rgba(231, 84, 128, 1);
+    background-color: #658feb;
+  }
+  &:active {
+    opacity: 0.6;
+  }
+`;
+
+const StyledButton2 = styled.button`
+  border: none;
+  color: white;
+  background-color: #ff999b;
+  border-radius: 8px;
+  padding: 4px 15px;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-block;
+  font-family: "Avenir";
+  font-weight: 400;
+  margin-top: -10px;
+
+  &:hover {
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 10px;
+    opacity: 0.9;
+    background-color: #ff8082;
   }
   &:active {
     opacity: 0.6;
@@ -91,6 +116,7 @@ const ContactContainer = styled.div`
   width: 310px;
   height: 400px;
   overflow: scroll;
+  padding-left: 15px;
 `;
 
 const validateEmail = (email) => {
@@ -169,7 +195,7 @@ const Contact = () => {
   return (
     <ContactContainer>
       <Headline>Manage Contacts</Headline>
-      <StyledButton onClick={() => goBack()}>Back</StyledButton>
+      <StyledButton2 onClick={() => goBack()}>← Back</StyledButton2>
       <Subtitle>Add Friends</Subtitle>
       <StyledInput
         placeholder="Email"
