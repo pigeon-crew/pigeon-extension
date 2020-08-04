@@ -324,7 +324,7 @@ const Main = ({ setLoggedIn }) => {
         )}
         <div style={{ marginLeft: '50px' }}>
           <SecondaryButton onClick={() => goTo(Contact)}>
-            Manage Contact
+            Manage Contacts
           </SecondaryButton>
           <SecondaryButton onClick={logout}>Logout</SecondaryButton>
         </div>
