@@ -55,6 +55,33 @@ const Paragraph = styled.div`
   margin: 10px 0px 15px 0px;
 `;
 
+const Button = styled.button`
+  font-family: 'Avenir';
+  border-radius: 10px;
+  font-weight: 400;
+  background-color: #6593F5;
+  margin-top: 1px;
+  padding-left: 25px;
+  padding-right: 25px;
+  margin-right: 10px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  border-style: none;
+  text-align: center;
+  display: inline-block;
+  &:hover {
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 3px 10px;
+    opacity: 0.9;
+    background-color: #658feb;
+  }
+  &:active {
+    opacity: 0.6;
+`;
+
+
 const LoginButton = styled.button`
   text-align: center;
   display: inline-block;
@@ -132,7 +159,7 @@ const Login = ({ setLoggedIn }) => {
           value={password}
           onChange={handlePasswordChanged}
         />
-        <LoginButton onClick={handleLogin}>Login</LoginButton>
+        <Button onClick={handleLogin}>Login</Button>
       </ContentContainer>
     </LoginContainer>
   );
