@@ -11,6 +11,9 @@ import {
   fetchMe,
   sendFriendRequest,
   fetchLinkPreview,
+  archiveLink,
+  likeLink,
+  fetchLikeStatus,
 } from '../services/apiClient';
 import {
   setTokens,
@@ -30,9 +33,7 @@ socket.on('notifiyNewLink', (payload) => {
   getNotifyCount((count) => {
     console.log(count);
     const newCount = count + 1 || 1;
-    console.log(newCount);
     setNotifyCount(newCount, () => {
-      console.log(newCount);
       if (newCount > 9) {
         chrome.browserAction.setBadgeText({ text: '10+' });
       } else {
@@ -46,6 +47,10 @@ socket.on('notifiyNewLink', (payload) => {
       });
     });
   });
+});
+
+socket.on('notifyNewLike', (payload) => {
+  console.log(payload);
 });
 
 function bindSocketToUID() {
@@ -184,6 +189,36 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
       const { url } = msg.payload;
       fetchLinkPreview('', url)
         .then((data) => response({ success: true, data }))
+        .catch((err) => response({ success: false, error: err }));
+      break;
+    case 'archiveLink':
+      getAccessToken()
+        .then((token) => {
+          const { linkId } = msg.payload;
+          archiveLink(token, linkId)
+            .then(() => response({ success: true }))
+            .catch((err) => response({ success: false, error: err }));
+        })
+        .catch((err) => response({ success: false, error: err }));
+      break;
+    case 'likeLink':
+      getAccessToken()
+        .then((token) => {
+          const { linkId } = msg.payload;
+          likeLink(token, linkId)
+            .then(() => response({ success: true }))
+            .catch((err) => response({ success: false, error: err }));
+        })
+        .catch((err) => response({ success: false, error: err }));
+      break;
+    case 'fetchLikeStatus':
+      getAccessToken()
+        .then((token) => {
+          const { linkId } = msg.payload;
+          fetchLikeStatus(token, linkId)
+            .then((status) => response({ success: true, status }))
+            .catch((err) => response({ success: false, error: err }));
+        })
         .catch((err) => response({ success: false, error: err }));
       break;
     default:

@@ -11,6 +11,7 @@ const FeedContainer = styled.div`
   margin: auto;
   padding: 7px 0px 7px 0px;
   margin-bottom: 20px;
+  box-shadow: 3px 7px 5px #7f8c8d;
 `;
 
 const LinkContainer = styled.div`
@@ -76,19 +77,24 @@ const Divider = styled.hr`
   margin: 8px 10px 0px 10px;
 `;
 
-const PFItem = ({ data }) => {
+const PFItem = ({ data, myFeed, setMyFeed }) => {
   const [linkpreview, setLinkPreview] = useState();
   const [imageError, setImageError] = useState(false);
+  const [likeStatus, setLikeStatus] = useState({
+    loading: false,
+    liked: false,
+  });
 
   useEffect(() => {
     const payload = { url: data.linkUrl };
+
+    fetchLikeStatus(data._id);
 
     chrome.runtime.sendMessage(
       { type: 'fetchLinkPreview', payload },
       (response) => {
         if (response && response.success) {
           const fetchedPreview = response.data;
-
           setLinkPreview(fetchedPreview);
           return;
         }
@@ -119,6 +125,46 @@ const PFItem = ({ data }) => {
       return str;
     }
     return `${str.substring(0, 30)}...`;
+  };
+
+  const fetchLikeStatus = (linkId) => {
+    setLikeStatus({ loading: true, liked: false });
+    const payload = { linkId };
+    chrome.runtime.sendMessage(
+      { type: 'fetchLikeStatus', payload },
+      (response) => {
+        if (response && response.success) {
+          const likeStatus = response.status;
+          setLikeStatus({ loading: false, liked: likeStatus });
+          return;
+        }
+        console.error(response.error);
+      }
+    );
+  };
+
+  const handleDone = (linkId) => {
+    const payload = { linkId };
+    chrome.runtime.sendMessage({ type: 'archiveLink', payload }, (response) => {
+      if (response && response.success) {
+        // delete this card from main list
+        const newFeed = myFeed.filter((val) => val._id !== linkId);
+        setMyFeed(newFeed);
+        return;
+      }
+      console.error(response.error);
+    });
+  };
+
+  const handleLike = (linkId) => {
+    const payload = { linkId };
+    chrome.runtime.sendMessage({ type: 'likeLink', payload }, (response) => {
+      if (response && response.success) {
+        setLikeStatus({ loading: false, liked: !likeStatus.liked });
+        return;
+      }
+      console.error(response.error);
+    });
   };
 
   return (
@@ -164,7 +210,13 @@ const PFItem = ({ data }) => {
               <URLTitle>
                 <img
                   src={linkpreview.favicon}
-                  style={{ padding: 0, marginRight: '5px' }}
+                  style={{
+                    padding: 0,
+                    marginRight: '5px',
+                    marginTop: '2px',
+                    height: '12px',
+                    width: 'auto',
+                  }}
                 />
                 {linkpreview.title}
               </URLTitle>
@@ -179,8 +231,16 @@ const PFItem = ({ data }) => {
       </LinkContainer>
       <Divider />
       <ButtonContainer>
-        <SecondaryButton>👍 Like</SecondaryButton>
-        <SecondaryButton>✅ Done</SecondaryButton>
+        <SecondaryButton onClick={() => handleLike(data._id)}>
+          {likeStatus.loading ? (
+            <>🤩&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</>
+          ) : (
+            <>{likeStatus.liked ? <>🤩 Unstar</> : <>🤩 Star&nbsp;&nbsp;</>}</>
+          )}
+        </SecondaryButton>
+        <SecondaryButton onClick={() => handleDone(data._id)}>
+          ✅ Done
+        </SecondaryButton>
       </ButtonContainer>
     </FeedContainer>
   );

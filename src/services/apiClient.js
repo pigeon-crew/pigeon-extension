@@ -198,6 +198,54 @@ function fetchLinkPreview(ACCESS_TOKEN, previewUrl) {
   });
 }
 
+function archiveLink(ACCESS_TOKEN, linkId) {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: `${API_ENDPOINT}/api/links/archive/${linkId}`,
+      method: 'POST',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+      },
+    })
+      .then(() => resolve())
+      .catch((err) => reject(err.response));
+  });
+}
+
+function likeLink(ACCESS_TOKEN, linkId) {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: `${API_ENDPOINT}/api/links/like/${linkId}`,
+      method: 'POST',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+      },
+    })
+      .then(() => resolve())
+      .catch((err) => reject(err.response));
+  });
+}
+
+function fetchLikeStatus(ACCESS_TOKEN, linkId) {
+  return new Promise((resolve, reject) => {
+    axios({
+      url: `${API_ENDPOINT}/api/links/like/${linkId}`,
+      method: 'GET',
+      timeout: 0,
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+      },
+    })
+      .then((res) => {
+        const status = res.data.liked;
+        resolve(status);
+      })
+      .catch((err) => reject(err.response));
+  });
+}
+
 export {
   login,
   fetchCurrentFriend,
@@ -209,4 +257,7 @@ export {
   fetchMe,
   sendFriendRequest,
   fetchLinkPreview,
+  archiveLink,
+  likeLink,
+  fetchLikeStatus,
 };

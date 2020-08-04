@@ -55,6 +55,29 @@ const Paragraph = styled.div`
   margin: 10px 0px 15px 0px;
 `;
 
+const LoginButton = styled.button`
+  text-align: center;
+  display: inline-block;
+   padding: 0.3em 1.2em;
+   margin: 0 0.1em 0.1em 0;
+   border: 0.16em solid rgba(255, 255, 255, 0);
+   border-radius: 20px;
+   box-sizing: border-box;
+   text-decoration: none;
+   font-family: 'Avenir';
+   font-weight: 400;
+   color: #ffffff;
+   text-shadow: 0 0.04em 0.04em rgba(0, 0, 0, 0.35);
+   text-align: center;
+   transition: all 0.2s;
+  background-color: #4e9af1;
+  padding: 7px 30px;
+  &:hover {
+    cursor: pointer;
+     border-color: rgba(255, 255, 255, 1);
+  }
+`;
+
 const Login = ({ setLoggedIn }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -109,7 +132,7 @@ const Login = ({ setLoggedIn }) => {
           value={password}
           onChange={handlePasswordChanged}
         />
-        <button onClick={handleLogin}>Login</button>
+        <LoginButton onClick={handleLogin}>Login</LoginButton>
       </ContentContainer>
     </LoginContainer>
   );

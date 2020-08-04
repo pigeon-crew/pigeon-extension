@@ -66,6 +66,14 @@ const MoreButton = styled.button`
   }
 `;
 
+const Paragraph = styled.div`
+  font-size: 14px;
+  font-family: 'Avenir';
+  font-weight: 500;
+  color: white;
+  margin: 10px 0px 15px 0px;
+`;
+
 const SecondaryButton = styled.button`
   border: none;
   background-color: inherit;
@@ -105,12 +113,15 @@ const Main = ({ setLoggedIn }) => {
   });
 
   const [myFeed, setMyFeed] = useState();
+  const [feedLoading, setFeedLoading] = useState(true);
 
   const fetchMyFeed = () => {
+    setFeedLoading(true);
     const payload = { limit: 5 };
     chrome.runtime.sendMessage({ type: 'fetchMyFeed', payload }, (response) => {
       if (response && response.success) {
         setMyFeed(response.links);
+        setFeedLoading(false);
         return;
       }
     });
@@ -137,9 +148,7 @@ const Main = ({ setLoggedIn }) => {
 
       chrome.runtime.sendMessage({ type: 'sendLink', payload }, (response) => {
         if (response && response.success) {
-          fetchMyFeed();
           setToast({ show: true, message: '✅ Your link is sent succesfully' });
-          // clear textfield
           setRecipient('');
           return;
         }
@@ -264,20 +273,54 @@ const Main = ({ setLoggedIn }) => {
           </IconContext.Provider>
         </SearchButton>
         <CollapsibleInput input={input} setInput={setInput} />
-        {myFeed && myFeed.length > 0 ? (
-          <div>
-            {myFeed.map((val) => {
-              return <PFItem key={val._id} data={val} />;
-            })}
-            <MoreButton
-              style={{ margin: '0px 0px 20px 50px' }}
-              onClick={() => openURL('https://pigeon-webapp.herokuapp.com/')}
-            >
-              See More
-            </MoreButton>
-          </div>
-        ) : (
-          <div></div>
+        {!feedLoading && (
+          <>
+            {myFeed && myFeed.length > 0 ? (
+              <div>
+                {myFeed.map((val) => {
+                  return (
+                    <PFItem
+                      key={val._id}
+                      data={val}
+                      myFeed={myFeed}
+                      setMyFeed={setMyFeed}
+                    />
+                  );
+                })}
+                <MoreButton
+                  style={{ margin: '0px 0px 20px 50px' }}
+                  onClick={() =>
+                    openURL('https://pigeon-webapp.herokuapp.com/')
+                  }
+                >
+                  See More
+                </MoreButton>
+              </div>
+            ) : (
+              <div
+                style={{
+                  width: '83%',
+                  padding: '0px 20px 40px 20px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Paragraph style={{ textAlign: 'center' }}>
+                  Oh hey! Looks like you don't have any new links.
+                </Paragraph>
+                <img
+                  src="img/illustrations/highfive.png"
+                  style={{
+                    maxHeight: '50vh',
+                    maxWidth: '50vw',
+                    objectFit: 'cover',
+                  }}
+                />
+              </div>
+            )}
+          </>
         )}
         <div style={{ marginLeft: '50px' }}>
           <SecondaryButton onClick={() => goTo(Contact)}>
