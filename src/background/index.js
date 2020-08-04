@@ -29,7 +29,7 @@ import io from 'socket.io-client';
 let socket = io.connect(API_ENDPOINT);
 let uid = null;
 
-socket.on('notifiyNewLink', (payload) => {
+socket.on('notifyNewLink', (payload) => {
   getNotifyCount((count) => {
     console.log(count);
     const newCount = count + 1 || 1;
@@ -50,7 +50,15 @@ socket.on('notifiyNewLink', (payload) => {
 });
 
 socket.on('notifyNewLike', (payload) => {
-  console.log(payload);
+  console.log('notify new link');
+
+  const { title, message } = payload;
+  chrome.notifications.create('', {
+    title,
+    message,
+    iconUrl: 'img/icons/icon@128.png',
+    type: 'basic',
+  });
 });
 
 function bindSocketToUID() {
@@ -76,6 +84,14 @@ function emitLinkSent(recipientEmail) {
   if (uid) {
     const payload = { senderId: uid, recipientEmail };
     socket.emit('linkSent', payload);
+  }
+}
+
+function emitLinkLiked(linkId, currentLikeStatus) {
+  // user id exists and post is currently not liked
+  if (uid && !currentLikeStatus) {
+    const payload = { senderId: uid, linkId };
+    socket.emit('linkLiked', payload);
   }
 }
 
@@ -204,9 +220,12 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
     case 'likeLink':
       getAccessToken()
         .then((token) => {
-          const { linkId } = msg.payload;
+          const { linkId, currentLikeStatus } = msg.payload;
           likeLink(token, linkId)
-            .then(() => response({ success: true }))
+            .then(() => {
+              emitLinkLiked(linkId, currentLikeStatus);
+              response({ success: true });
+            })
             .catch((err) => response({ success: false, error: err }));
         })
         .catch((err) => response({ success: false, error: err }));

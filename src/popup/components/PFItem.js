@@ -157,7 +157,7 @@ const PFItem = ({ data, myFeed, setMyFeed }) => {
   };
 
   const handleLike = (linkId) => {
-    const payload = { linkId };
+    const payload = { linkId, currentLikeStatus: likeStatus.liked };
     chrome.runtime.sendMessage({ type: 'likeLink', payload }, (response) => {
       if (response && response.success) {
         setLikeStatus({ loading: false, liked: !likeStatus.liked });
