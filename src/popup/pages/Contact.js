@@ -1,14 +1,14 @@
 /** @format */
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { goBack } from "react-chrome-extension-router";
-import FriendReqItem from "../components/FriendReqItem";
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import { goBack } from 'react-chrome-extension-router';
+import FriendReqItem from '../components/FriendReqItem';
 
 // TODO: Consolidate Headline, Subtitle, Desc into one component with font size as a prop
 
 const Headline = styled.h1`
   font-size: 20px;
-  font-family: "Avenir";
+  font-family: 'Avenir';
   font-weight: 600;
   color: white;
   margin: 10px 0;
@@ -18,7 +18,7 @@ const Headline = styled.h1`
 
 const Subtitle = styled.h3`
   font-size: 16px;
-  font-family: "Avenir";
+  font-family: 'Avenir';
   font-weight: 600;
   color: #f5f5f5;
   margin: 20px 0 0 0;
@@ -27,7 +27,7 @@ const Subtitle = styled.h3`
 
 const Desc = styled.div`
   font-size: 13px;
-  font-family: "Avenir";
+  font-family: 'Avenir';
   font-weight: 200;
   font-style: italic;
   color: #ff8082;
@@ -38,13 +38,13 @@ const Desc = styled.div`
 const StyledButton = styled.button`
   border: none;
   color: white;
-  background-color: #6593F5;
+  background-color: #6593f5;
   padding: 7px 17px;
   border-radius: 10px;
   font-size: 13px;
   cursor: pointer;
   display: inline-block;
-  font-family: "Avenir";
+  font-family: 'Avenir';
   font-weight: 500;
 
   &:hover {
@@ -66,7 +66,7 @@ const StyledButton2 = styled.button`
   font-size: 12px;
   cursor: pointer;
   display: inline-block;
-  font-family: "Avenir";
+  font-family: 'Avenir';
   font-weight: 400;
   margin-top: -10px;
 
@@ -116,7 +116,10 @@ const ContactContainer = styled.div`
   width: 310px;
   height: 400px;
   overflow: scroll;
-  padding-left: 15px;
+`;
+
+const ContentContainer = styled.div`
+  margin: 20px;
 `;
 
 const validateEmail = (email) => {
@@ -126,15 +129,15 @@ const validateEmail = (email) => {
 
 const Contact = () => {
   const [pendingRequests, setPendingRequests] = useState([]);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
 
   const fetchPendingRequests = () => {
-    chrome.runtime.sendMessage({ type: "fetchPendingFriends" }, (response) => {
+    chrome.runtime.sendMessage({ type: 'fetchPendingFriends' }, (response) => {
       if (response && response.success) {
         setPendingRequests(response.request);
         return;
       }
-      alert("Fetch Pending Request Error");
+      alert('Fetch Pending Request Error');
     });
   };
 
@@ -142,13 +145,13 @@ const Contact = () => {
     const payload = { friendReqId };
 
     chrome.runtime.sendMessage(
-      { type: "acceptRequest", payload },
+      { type: 'acceptRequest', payload },
       (response) => {
         if (response && response.success) {
           fetchPendingRequests();
           return;
         }
-        alert("Accept Request Error");
+        alert('Accept Request Error');
       }
     );
   };
@@ -157,13 +160,13 @@ const Contact = () => {
     const payload = { friendReqId };
 
     chrome.runtime.sendMessage(
-      { type: "rejectRequest", payload },
+      { type: 'rejectRequest', payload },
       (response) => {
         if (response && response.success) {
           fetchPendingRequests();
           return;
         }
-        alert("Reject Request Error");
+        alert('Reject Request Error');
       }
     );
   };
@@ -173,13 +176,13 @@ const Contact = () => {
 
     const payload = { email };
     chrome.runtime.sendMessage(
-      { type: "sendFriendRequest", payload },
+      { type: 'sendFriendRequest', payload },
       (response) => {
         if (response && response.success) {
-          alert("Friend request sent!");
+          alert('Friend request sent!');
           return;
         }
-        alert("Friend Request Error");
+        alert('Friend Request Error');
       }
     );
   };
@@ -194,30 +197,33 @@ const Contact = () => {
 
   return (
     <ContactContainer>
-      <Headline>Manage Contacts</Headline>
-      <StyledButton2 onClick={() => goBack()}>← Back</StyledButton2>
-      <Subtitle>Add Friends</Subtitle>
-      <StyledInput
-        placeholder="Email"
-        value={email}
-        onChange={handleEmailChanged}
-      ></StyledInput>
-      <StyledButton onClick={handleSendRequest}>Send Request</StyledButton>
-      <Subtitle>Pending Requests</Subtitle>
-      {pendingRequests && pendingRequests.length > 0 ? (
-        pendingRequests.map((data) => {
-          return (
-            <FriendReqItem
-              key={data._id}
-              data={data}
-              handleAccept={handleAccept}
-              handleReject={handleReject}
-            />
-          );
-        })
-      ) : (
-        <Desc>You have no pending requests</Desc>
-      )}
+      <ContentContainer>
+        <StyledButton2 onClick={() => goBack()}>← Back</StyledButton2>
+        <Headline>Manage Contacts</Headline>
+
+        <Subtitle>Add Friend</Subtitle>
+        <StyledInput
+          placeholder="Email"
+          value={email}
+          onChange={handleEmailChanged}
+        ></StyledInput>
+        <StyledButton onClick={handleSendRequest}>Send Request</StyledButton>
+        <Subtitle>Pending Requests</Subtitle>
+        {pendingRequests && pendingRequests.length > 0 ? (
+          pendingRequests.map((data) => {
+            return (
+              <FriendReqItem
+                key={data._id}
+                data={data}
+                handleAccept={handleAccept}
+                handleReject={handleReject}
+              />
+            );
+          })
+        ) : (
+          <Desc>You have no pending requests</Desc>
+        )}
+      </ContentContainer>
     </ContactContainer>
   );
 };
