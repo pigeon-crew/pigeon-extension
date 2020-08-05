@@ -133,8 +133,8 @@ chrome.runtime.onMessage.addListener((msg, sender, response) => {
     case 'fetchMyFeed':
       getAccessToken()
         .then((token) => {
-          const { limit } = msg.payload;
-          fetchMyFeed(token, limit)
+          const { limit, archive, author, like } = msg.payload;
+          fetchMyFeed(token, limit, archive, author, like)
             .then((data) => response({ success: true, links: data }))
             .catch((err) => response({ success: false, error: err }));
         })

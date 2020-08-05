@@ -22,14 +22,15 @@ function login(email, password) {
   });
 }
 
-function fetchMyFeed(ACCESS_TOKEN, limit = '') {
+function fetchMyFeed(
+  ACCESS_TOKEN,
+  limit = '',
+  archive = 'false',
+  author = '',
+  like = 'false'
+) {
   return new Promise((resolve, reject) => {
-    let url;
-    if (limit) {
-      url = `${API_ENDPOINT}/api/links/me?limit=${limit}`;
-    } else {
-      url = `${API_ENDPOINT}/api/links/me`;
-    }
+    let url = `${API_ENDPOINT}/api/links/me?limit=${limit}&archive=${archive}&author=${author}&like=${like}`;
 
     axios({
       url,
