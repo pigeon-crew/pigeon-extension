@@ -3,12 +3,7 @@
   "manifest_version": 2,
   "name": "Pigeon",
   "description": "Extension to make link sharing fun.",
-  "content_scripts": [
-    {
-      "matches": [],
-      "js": ["lib/js/browser-polyfill.js", "content.js"]
-    }
-  ],
+  "content_scripts": [],
   "background": {
     "scripts": ["lib/js/browser-polyfill.js", "background.js"]
   },
