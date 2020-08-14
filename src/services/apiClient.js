@@ -1,264 +1,82 @@
 /** @format */
+
 import axios from 'axios';
-// access token no longer exists! todo!
-import { API_ENDPOINT } from '../services/config';
+import { API_ENDPOINT } from './config';
+import { setAccToken, setRefToken, getRefreshToken } from './storageClient';
 
-function login(email, password) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/users/login`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify({ email: email, password: password }),
-    })
-      .then((res) => {
-        const { refreshToken, accessToken } = res.data;
-        resolve({ refreshToken, accessToken });
-      })
-      .catch((err) => reject(err));
-  });
+let isAlreadyFetchingAccessToken = false;
+let subscribers = [];
+
+const secureAxios = axios.create({
+  baseURL: API_ENDPOINT,
+});
+
+secureAxios.interceptors.response.use(
+  function(response) {
+    console.log('using secure axios');
+    return response;
+  },
+  function(error) {
+    const errorResponse = error.response;
+
+    if (errorResponse && isTokenExpiredError(errorResponse)) {
+      return refreshTokenAndReattemptRequest(errorResponse);
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+function isTokenExpiredError(error) {
+  return error.status === 401;
 }
 
-function fetchMyFeed(
-  ACCESS_TOKEN,
-  limit = '',
-  archive = 'false',
-  author = '',
-  like = 'false'
-) {
-  return new Promise((resolve, reject) => {
-    let url = `${API_ENDPOINT}/api/links/me?limit=${limit}&archive=${archive}&author=${author}&like=${like}`;
-
-    axios({
-      url,
-      method: 'GET',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    })
-      .then((res) => {
-        const links = res.data.links;
-        resolve(links);
-      })
-      .catch((err) => reject(err));
-  });
-}
-
-function sendLink(ACCESS_TOKEN, linkUrl, recipientEmail, message) {
-  const data = {
-    linkUrl,
-    recipientEmail,
-  };
-
-  if (message) data.message = message;
-
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/links/create`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify(data),
-    })
-      .then(() => resolve())
-      .catch((err) => reject(err.response));
-  });
-}
-
-function fetchCurrentFriend(ACCESS_TOKEN) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/friends/current`,
-      method: 'GET',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    })
-      .then((res) => {
-        const friends = res.data.data;
-        resolve(friends);
-      })
-      .catch((err) => reject(err));
-  });
-}
-
-function fetchPendingFriend(ACCESS_TOKEN) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/friends/pending`,
-      method: 'GET',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    })
-      .then((res) => {
-        const requests = res.data.data;
-        resolve(requests);
-      })
-      .catch((err) => {
-        reject(err.response);
+async function refreshTokenAndReattemptRequest(errorResponse) {
+  try {
+    const refreshToken = await getRefreshToken();
+    if (!refreshToken) {
+      return Promise.reject(new Error('Invalid refresh token'));
+    }
+    const retryOriginalRequest = new Promise((resolve) => {
+      addSubscriber((accessToken) => {
+        errorResponse.config.headers.Authorization = `Bearer ${accessToken}`;
+        resolve(axios(errorResponse.config));
       });
-  });
-}
-function acceptRequest(friendReqId, ACCESS_TOKEN) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/friends/accept`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify({ friendReqId }),
-    })
-      .then(() => resolve())
-      .catch((err) => reject(err.response));
-  });
-}
-
-function rejectRequest(friendReqId, ACCESS_TOKEN) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/friends/reject`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify({ friendReqId }),
-    })
-      .then(() => resolve())
-      .catch((err) => reject(err.response));
-  });
+    });
+    if (!isAlreadyFetchingAccessToken) {
+      isAlreadyFetchingAccessToken = true;
+      const response = await axios({
+        method: 'POST',
+        url: `${API_ENDPOINT}/api/users/refreshToken`,
+        timeout: 0,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: JSON.stringify({ refreshToken }),
+      });
+      if (!response.data) {
+        return Promise.reject(new Error('Failed to fetch refresh token'));
+      }
+      const newAccessToken = response.data.accessToken;
+      await setAccToken(newAccessToken);
+      isAlreadyFetchingAccessToken = false;
+      onAccessTokenFetched(newAccessToken);
+    }
+    return retryOriginalRequest;
+  } catch (err) {
+    await setAccToken('');
+    await setRefToken('');
+    return Promise.reject(err);
+  }
 }
 
-function fetchMe(ACCESS_TOKEN) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/users/me`,
-      method: 'GET',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    })
-      .then((res) => {
-        const me = res.data.data;
-        resolve(me);
-      })
-      .catch((err) => reject(err.response));
-  });
+function onAccessTokenFetched(accessToken) {
+  subscribers.forEach((callback) => callback(accessToken));
+  subscribers = [];
 }
 
-function sendFriendRequest(email, ACCESS_TOKEN) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/friends/request`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify({ recipientEmail: email }),
-    })
-      .then(() => resolve())
-      .catch((err) => reject(err.response));
-  });
+function addSubscriber(callback) {
+  subscribers.push(callback);
 }
 
-function fetchLinkPreview(ACCESS_TOKEN, previewUrl) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/links/preview`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      data: JSON.stringify({
-        previewUrl,
-      }),
-    })
-      .then((res) => {
-        const preview = res.data.data;
-        resolve(preview);
-      })
-      .catch((err) => reject(err.response));
-  });
-}
-
-function archiveLink(ACCESS_TOKEN, linkId) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/links/archive/${linkId}`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    })
-      .then(() => resolve())
-      .catch((err) => reject(err.response));
-  });
-}
-
-function likeLink(ACCESS_TOKEN, linkId) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/links/like/${linkId}`,
-      method: 'POST',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    })
-      .then(() => resolve())
-      .catch((err) => reject(err.response));
-  });
-}
-
-function fetchLikeStatus(ACCESS_TOKEN, linkId) {
-  return new Promise((resolve, reject) => {
-    axios({
-      url: `${API_ENDPOINT}/api/links/like/${linkId}`,
-      method: 'GET',
-      timeout: 0,
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    })
-      .then((res) => {
-        const status = res.data.liked;
-        resolve(status);
-      })
-      .catch((err) => reject(err.response));
-  });
-}
-
-export {
-  login,
-  fetchCurrentFriend,
-  fetchMyFeed,
-  sendLink,
-  fetchPendingFriend,
-  acceptRequest,
-  rejectRequest,
-  fetchMe,
-  sendFriendRequest,
-  fetchLinkPreview,
-  archiveLink,
-  likeLink,
-  fetchLikeStatus,
-};
+export default secureAxios;

@@ -1,6 +1,6 @@
 /** @format */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Router } from 'react-chrome-extension-router';
 import Login from './Login';
 import Main from './Main';

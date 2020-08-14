@@ -38,6 +38,22 @@ function setTokens(accessToken, refreshToken) {
   });
 }
 
+function setAccToken(accessToken) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ accessToken }, () => {
+      resolve();
+    });
+  });
+}
+
+function setRefToken(refreshToken) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ refreshToken }, () => {
+      resolve();
+    });
+  });
+}
+
 function getRefreshToken() {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get('refreshToken', (tokenPair) => {
@@ -67,6 +83,8 @@ function getAccessToken() {
 }
 
 export {
+  setAccToken,
+  setRefToken,
   setRefreshToken,
   setAccessToken,
   setTokens,

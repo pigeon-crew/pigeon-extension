@@ -14,7 +14,7 @@ import {
   archiveLink,
   likeLink,
   fetchLikeStatus,
-} from '../services/apiClient';
+} from '../services/apiRequests';
 import {
   setTokens,
   getRefreshToken,
