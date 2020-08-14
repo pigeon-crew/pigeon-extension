@@ -11,7 +11,7 @@
     "default_icon": "img/icons/icon@48.png",
     "default_popup": "popup.html"
   },
-  "permissions": ["storage", "unlimitedStorage", "tabs", "notifications"],
+  "permissions": ["storage", "tabs", "notifications"],
   "icons": {
     "128": "img/icons/icon@128.png",
     "48": "img/icons/icon@48.png",
